@@ -89,4 +89,14 @@ public class TowerSpot : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position + placementOffset, 0.3f);
         Gizmos.DrawLine(transform.position, transform.position + placementOffset);
     }
+
+    private void OnMouseEnter()
+    {
+        EventManager.Invoke(GlobalEvents.MouseEnterTower, this);
+    }
+
+    private void OnMouseExit()
+    {
+        EventManager.Invoke(GlobalEvents.MouseExitTower, this);
+    }
 }

@@ -1,30 +1,52 @@
-using System;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private int damageToCore = 1;
 
+    // El SpawnPoint que creó/gestiona este enemigo
+    [HideInInspector] public SpawnPoint ownerSpawner;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Core"))
         {
-            Console.WriteLine("Llego a core");
+            Debug.Log("Llego a core");
             ReachCore();
         }
     }
 
     public void ReachCore()
     {
-        // Buscar el núcleo y aplicar daño
         CoreHealth core = FindFirstObjectByType<CoreHealth>();
         if (core != null)
         {
             core.TakeDamage(damageToCore);
         }
 
-        // Eliminar o devolver a la pool
-        Destroy(gameObject);
+        ReturnToPoolOrDisable();
+    }
+
+    public void Die()
+    {
+        //Aqui vas a hacer lo de animaciones por si mueren o alguna locochoneria asi
+        ReturnToPoolOrDisable();
+    }
+
+    private void ReturnToPoolOrDisable()
+    {
+        if (ownerSpawner != null)
+        {
+            ownerSpawner.ReturnToPool(gameObject);
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
+    public void Initialize(SpawnPoint spawner)
+    {
+        ownerSpawner = spawner;
     }
 }

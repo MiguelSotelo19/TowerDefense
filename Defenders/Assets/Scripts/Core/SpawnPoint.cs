@@ -1,13 +1,122 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
 
 public class SpawnPoint : MonoBehaviour
 {
-
+    [Header("Spawn Settings")]
     public int spawnID = 0;
     public SplineContainer associatedSpline;
+    public GameObject enemyPrefab;
+    public int poolSize = 10;
+    public float spawnInterval = 2f;
 
+    private Queue<GameObject> enemyPool = new Queue<GameObject>();
+    private float spawnTimer;
+
+    [Header("Gizmos Settings")]
     public Color spawnColor = Color.red;
+    public float iconSize = 1f;
+
+    private void Start()
+    {
+        InitializePool();
+    }
+
+    private void Update()
+    {
+        spawnTimer += Time.deltaTime;
+        if (spawnTimer >= spawnInterval)
+        {
+            SpawnEnemy();
+            spawnTimer = 0f;
+        }
+    }
+
+    private void InitializePool()
+    {
+        if (enemyPrefab == null)
+        {
+            Debug.LogError($"SpawnPoint {name} no tiene asignado un prefab de enemigo.");
+            return;
+        }
+
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject enemy = Instantiate(enemyPrefab, transform.position, transform.rotation);
+
+            enemy.SetActive(false);
+
+            enemy.transform.SetParent(transform, worldPositionStays: true);
+
+            enemyPool.Enqueue(enemy);
+        }
+    }
+
+    private void SpawnEnemy()
+    {
+        if (enemyPrefab == null || associatedSpline == null)
+        {
+            Debug.LogWarning($"SpawnPoint {name} no puede generar enemigo: falta prefab o spline.");
+            return;
+        }
+
+        GameObject enemy = GetEnemyFromPool();
+
+        enemy.transform.SetParent(null, true); // Por si hay offsets
+        enemy.transform.position = transform.position;
+        enemy.transform.rotation = transform.rotation;
+
+        // Reasignar spline y resetear path
+        var pathAgent = enemy.GetComponent<FollowPathAgent>();
+        if (pathAgent != null)
+        {
+            pathAgent.AssignSplineContainer(associatedSpline);
+            pathAgent.ResetProgress(keepWorldPosition: true);
+
+            pathAgent.enabled = true;
+        }
+
+        enemy.SetActive(true);
+
+        enemy.transform.SetParent(transform, true);
+    }
+
+
+    private GameObject GetEnemyFromPool()
+    {
+        GameObject enemy;
+        if (enemyPool.Count > 0)
+        {
+            enemy = enemyPool.Dequeue();
+            if (enemy == null)
+            {
+                enemy = Instantiate(enemyPrefab);
+            }
+        }
+        else
+        {
+            enemy = Instantiate(enemyPrefab);
+        }
+
+        return enemy;
+    }
+
+    // Método para retornar el enemigo al pool
+    public void ReturnToPool(GameObject enemy)
+    {
+        // Reset state
+        var pathAgent = enemy.GetComponent<FollowPathAgent>();
+        if (pathAgent != null)
+        {
+            pathAgent.enabled = false;
+        }
+
+        enemy.SetActive(false);
+        enemyPool.Enqueue(enemy);
+        // Optionally parent it back to spawnpoint
+        enemy.transform.SetParent(transform);
+    }
 
     public Vector3 GetSpawnPosition()
     {
