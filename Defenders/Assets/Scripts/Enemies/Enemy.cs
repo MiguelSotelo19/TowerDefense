@@ -3,9 +3,8 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private int damageToCore = 1;
-
-    // El SpawnPoint que creó/gestiona este enemigo
     [HideInInspector] public SpawnPoint ownerSpawner;
+    public int bytes = 0;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -30,6 +29,7 @@ public class Enemy : MonoBehaviour
     public void Die()
     {
         //Aqui vas a hacer lo de animaciones por si mueren o alguna locochoneria asi
+        EconomyManager.Instance.AddBytes(bytes);
         ReturnToPoolOrDisable();
     }
 
