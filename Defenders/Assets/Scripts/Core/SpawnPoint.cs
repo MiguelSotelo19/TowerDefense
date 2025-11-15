@@ -80,6 +80,8 @@ public class SpawnPoint : MonoBehaviour
         enemy.SetActive(true);
 
         enemy.transform.SetParent(transform, true);
+
+        EventManager.Invoke(GlobalEvents.SpawnEnemy, enemy.transform);
     }
 
 
@@ -102,7 +104,7 @@ public class SpawnPoint : MonoBehaviour
         return enemy;
     }
 
-    // Método para retornar el enemigo al pool
+    // Mï¿½todo para retornar el enemigo al pool
     public void ReturnToPool(GameObject enemy)
     {
         // Reset state

@@ -3,5 +3,6 @@ public enum GlobalEvents
     SwitchOn,
     SwitchOff,
     MouseEnterTower,
-    MouseExitTower
+    MouseExitTower,
+    SpawnEnemy
 }
