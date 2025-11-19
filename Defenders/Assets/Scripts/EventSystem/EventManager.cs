@@ -54,4 +54,9 @@ public class EventManager : MonoBehaviour
     {
         foreach (var @delegate in Events[globalEvent]) if (@delegate is Action action) action.Invoke();
     }
+
+    internal static void Trigger<T>(object enemyDied, T transform)
+    {
+        throw new NotImplementedException();
+    }
 }

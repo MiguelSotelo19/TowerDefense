@@ -4,5 +4,6 @@ public enum GlobalEvents
     SwitchOff,
     MouseEnterTower,
     MouseExitTower,
-    SpawnEnemy
+    SpawnEnemy,
+    EnemyDied
 }

@@ -13,6 +13,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int damageToCore = 1;
     public int bytes = 0;
 
+    private EnemyHealthBarController healthBar;
+
     [HideInInspector] public SpawnPoint ownerSpawner;
 
     private Health enemyHealth;
@@ -21,9 +23,8 @@ public class Enemy : MonoBehaviour
     private void Awake()
     {
         if (animator == null)
-        {
             animator = GetComponent<Animator>();
-        }
+
         enemyHealth = GetComponent<Health>();
         followPathAgent = GetComponent<FollowPathAgent>();
     }
@@ -31,29 +32,25 @@ public class Enemy : MonoBehaviour
     private void OnEnable()
     {
         if (animator != null)
-        {
             animator.SetBool("IsDead", false);
-        }
 
         if (enemyHealth != null)
-        {
-            enemyHealth.onDeath.AddListener(Die);
-            enemyHealth.onHealthChange.AddListener(HandleHealthChange);
-        }
+    {
+        enemyHealth.onDeath.AddListener(Die);
+        enemyHealth.onHealthChange.AddListener(HandleHealthChange);
+    }
 
         if (followPathAgent != null)
-        {
             followPathAgent.enabled = true;
-        }
     }
 
     private void OnDisable()
     {
         if (enemyHealth != null)
-        {
-            enemyHealth.onDeath.RemoveListener(Die);
-            enemyHealth.onHealthChange.RemoveListener(HandleHealthChange);
-        }
+    {
+        enemyHealth.onDeath.RemoveListener(Die);
+        enemyHealth.onHealthChange.RemoveListener(HandleHealthChange);
+    }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -65,40 +62,40 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void HandleHealthChange(float current, float max)
-    {
-        if (current > 0 && animator != null)
-        {
-            animator.SetTrigger("Hit");
-        }
-    }
+   private void HandleHealthChange(float current, float max)
+{
+    if (current > 0 && animator != null)
+        animator.SetTrigger("Hit");
+
+    if (healthBar != null)
+        healthBar.SetHealth(current, max);   // ✔ este método existe ahora
+}
+
 
     public void ReachCore()
     {
         CoreHealth core = FindFirstObjectByType<CoreHealth>();
         if (core != null)
-        {
             core.TakeDamage(damageToCore);
-        }
 
         Die();
     }
 
     public void Die()
     {
-        if (animator != null && animator.GetBool("IsDead")) return;
+        if (animator != null && animator.GetBool("IsDead"))
+            return;
+
+        // Evento de muerte (para el pool)
+        EventManager.Invoke(GlobalEvents.EnemyDied, transform);
 
         if (followPathAgent != null)
-        {
             followPathAgent.enabled = false;
-        }
 
         EconomyManager.Instance.AddBytes(bytes);
 
         if (animator != null)
-        {
             animator.SetBool("IsDead", true);
-        }
 
         StartCoroutine(WaitAndReturnToPool(deathAnimationDuration));
     }
@@ -118,13 +115,9 @@ public class Enemy : MonoBehaviour
         }
 
         if (ownerSpawner != null)
-        {
             ownerSpawner.ReturnToPool(gameObject);
-        }
         else
-        {
             gameObject.SetActive(false);
-        }
     }
 
     public void Initialize(SpawnPoint spawner)
@@ -136,5 +129,11 @@ public class Enemy : MonoBehaviour
             followPathAgent.enabled = true;
             followPathAgent.ResetProgress(false);
         }
+    }
+
+    // Este método queda simple porque el pool ya hace AttachToEnemy()
+    public void AssignHealthBar(EnemyHealthBarController bar)
+    {
+        healthBar = bar;
     }
 }

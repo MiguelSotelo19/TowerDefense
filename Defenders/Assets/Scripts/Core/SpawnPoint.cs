@@ -78,6 +78,8 @@ public class SpawnPoint : MonoBehaviour
         }
 
         enemy.SetActive(true);
+       
+
 
         enemy.transform.SetParent(transform, true);
 
