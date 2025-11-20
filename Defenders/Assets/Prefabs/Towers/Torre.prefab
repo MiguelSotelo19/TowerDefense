@@ -73,7 +73,7 @@ MonoBehaviour:
   enemyTag: Enemy
   bulletPrefab: {fileID: 1234885817971972489, guid: 232134b26f2b6ae48b22c090182b8212, type: 3}
   firePoint: {fileID: 0}
-  bulletPool: {fileID: 0}
+  bulletPool: {fileID: 6904239071259310635, guid: d4d1ef2859927b84aa19216f6046bafb, type: 3}
   rangeDisplay: {fileID: 0}
 --- !u!1001 &2677608477495615508
 PrefabInstance:
