@@ -219,6 +219,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2897260103441720765, guid: c2848cc960780f847a292db0ebf61687, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5218437663872793763, guid: c2848cc960780f847a292db0ebf61687, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8588434042699085736, guid: c2848cc960780f847a292db0ebf61687, type: 3}
       propertyPath: m_Name
       value: Troyano
