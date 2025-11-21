@@ -28,6 +28,12 @@ public class Health : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
     }
 
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth;
+        onHealthChange?.Invoke(currentHealth, maxHealth);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         var hitbox = other.GetComponent<Hitbox>();

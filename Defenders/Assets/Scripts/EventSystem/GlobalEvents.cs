@@ -5,5 +5,11 @@ public enum GlobalEvents
     MouseEnterTower,
     MouseExitTower,
     SpawnEnemy,
-    EnemyDied
+    EnemyDied,
+
+    // Nuevos eventos de oleadas
+    WaveStarted,
+    WaveCompleted,
+    AllWavesCompleted,
+    EnemyReachedCore
 }
