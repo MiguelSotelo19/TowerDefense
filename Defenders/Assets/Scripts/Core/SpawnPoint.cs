@@ -12,6 +12,7 @@ public class SpawnPoint : MonoBehaviour
     public float spawnInterval = 2f;
 
     private Queue<GameObject> enemyPool = new Queue<GameObject>();
+    private Dictionary<GameObject, Queue<GameObject>> enemyPools = new Dictionary<GameObject, Queue<GameObject>>();
     private float spawnTimer;
 
     [Header("Gizmos Settings")]
@@ -125,6 +126,99 @@ public class SpawnPoint : MonoBehaviour
     public Vector3 GetSpawnPosition()
     {
         return transform.position;
+    }
+
+    private void InitializePoolForPrefab(GameObject prefab)
+    {
+        if (prefab == null)
+        {
+            Debug.LogError($"SpawnPoint {name} no puede inicializar pool: prefab es null.");
+            return;
+        }
+
+        Queue<GameObject> pool = new Queue<GameObject>();
+
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject enemy = Instantiate(prefab, transform.position, transform.rotation);
+            enemy.SetActive(false);
+            enemy.transform.SetParent(transform, worldPositionStays: true);
+            pool.Enqueue(enemy);
+        }
+
+        enemyPools[prefab] = pool;
+        Debug.Log($"Pool inicializado para {prefab.name} con {poolSize} instancias");
+    }
+
+    private GameObject GetEnemyFromPool(GameObject prefab)
+    {
+        GameObject enemy;
+        Queue<GameObject> pool = enemyPools[prefab];
+
+        if (pool.Count > 0)
+        {
+            enemy = pool.Dequeue();
+            if (enemy == null)
+            {
+                enemy = Instantiate(prefab);
+            }
+        }
+        else
+        {
+            // Si el pool está vacío, crear uno nuevo
+            enemy = Instantiate(prefab);
+            Debug.LogWarning($"Pool de {prefab.name} agotado, creando nueva instancia");
+        }
+
+        return enemy;
+    }
+
+    // Método llamado por WaveManager para spawear enemigos
+    public void SpawnEnemyFromPool(GameObject enemyPrefab)
+    {
+        if (enemyPrefab == null || associatedSpline == null)
+        {
+            Debug.LogWarning($"SpawnPoint {name} no puede generar enemigo: falta prefab o spline.");
+            return;
+        }
+
+        // Inicializar pool si no existe
+        if (!enemyPools.ContainsKey(enemyPrefab))
+        {
+            InitializePoolForPrefab(enemyPrefab);
+        }
+
+        GameObject enemy = GetEnemyFromPool(enemyPrefab);
+
+        // Posicionar enemigo
+        enemy.transform.SetParent(null, true);
+        enemy.transform.position = transform.position;
+        enemy.transform.rotation = transform.rotation;
+
+        // Configurar pathfinding
+        var pathAgent = enemy.GetComponent<FollowPathAgent>();
+        if (pathAgent != null)
+        {
+            pathAgent.AssignSplineContainer(associatedSpline);
+            pathAgent.ResetProgress(keepWorldPosition: true);
+            pathAgent.enabled = true;
+        }
+
+        // Configurar referencia al spawner
+        var enemyComponent = enemy.GetComponent<Enemy>();
+        if (enemyComponent != null)
+        {
+            enemyComponent.Initialize(this);
+        }
+
+        // Resetear salud
+        var health = enemy.GetComponent<Health>();
+        if (health != null)
+        {
+            health.ResetHealth();
+        }
+
+        enemy.SetActive(true);
     }
 
     
