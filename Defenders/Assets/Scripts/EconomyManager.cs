@@ -3,7 +3,6 @@ using UnityEngine;
 public class EconomyManager : MonoBehaviour
 {
     public static EconomyManager Instance { get; private set; }
-
     public int totalBytes = 0;
 
     private void Awake()
@@ -14,6 +13,7 @@ public class EconomyManager : MonoBehaviour
             return;
         }
         Instance = this;
+        DontDestroyOnLoad(gameObject); 
     }
 
     public int GetBytes()
