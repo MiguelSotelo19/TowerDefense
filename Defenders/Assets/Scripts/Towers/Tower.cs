@@ -14,6 +14,8 @@ public class Tower : MonoBehaviour
     private Transform target;
     [SerializeField] private GameObject rangeDisplay;
     private TowerStateMachine stateMachine;
+    [SerializeField] private AudioSource shootSound;
+
     public Transform Target
     {
         get { return target; }
@@ -63,6 +65,9 @@ public class Tower : MonoBehaviour
                 available.direction = firePoint.transform.up;
                 available.transform.position = firePoint.transform.position;
                 available.gameObject.SetActive(true);
+
+                if (shootSound != null)
+                shootSound.Play();
             }
             yield return new WaitForSeconds(0.5f);
         }
