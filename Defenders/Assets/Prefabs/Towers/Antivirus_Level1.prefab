@@ -1571,7 +1571,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.14734, y: 0.05, z: 1.41379}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1098136965068287354}
@@ -1611,8 +1611,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83628a8d91503f746902e69dfb09aaf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower
+  towerName: Antivirus
+  currentLevel: 1
+  maxLevel: 3
   range: 5
   enemyTag: Enemy
+  fireRate: 0.5
+  maxTargets: 1
+  baseCost: 100
+  upgradeCosts: 96000000fa000000
+  levelMaterials:
+  - {fileID: 2100000, guid: 14b14fc5ba1d43d4eae2a50ca39f299c, type: 2}
+  - {fileID: 2100000, guid: 21ab92615c40bd04089bae83343cb4ca, type: 2}
+  - {fileID: 2100000, guid: a749e20f5ce9621458ef57ef1905f33e, type: 2}
+  levelModels: []
   bulletPrefab: {fileID: 1234885817971972489, guid: 232134b26f2b6ae48b22c090182b8212, type: 3}
   firePoint: {fileID: 2789923330652923354}
   bulletPool: {fileID: 6904239071259310635, guid: d4d1ef2859927b84aa19216f6046bafb, type: 3}

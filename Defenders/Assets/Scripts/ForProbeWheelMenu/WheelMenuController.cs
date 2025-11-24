@@ -9,15 +9,19 @@ public class WheelMenuController : MonoBehaviour
     public float animationDuration = 0.2f;
     public AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     
+    [Header("Menu References")]
+    public GameObject buildOptionsContainer;
+    public GameObject upgradeOptionsContainer;
+    
     private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
     private Coroutine currentAnimation;
+    private Tower selectedTower;
 
     private void Awake()
     {
         Instance = this;
         
-        // Obtener componentes necesarios
         canvasGroup = GetComponent<CanvasGroup>();
         if (canvasGroup == null)
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
@@ -27,13 +31,45 @@ public class WheelMenuController : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void ShowMenu(Vector3 screenPos)
+    public void ShowBuildMenu(Vector3 screenPos)
     {
-        // Posicionar el menú
+        selectedTower = null;
+        
+        // ← ACTIVAR WHEELMENU PRIMERO ←
+        gameObject.SetActive(true);
+        
+        // Luego cambiar los contenedores
+        if (buildOptionsContainer != null)
+            buildOptionsContainer.SetActive(true);
+        if (upgradeOptionsContainer != null)
+            upgradeOptionsContainer.SetActive(false);
+        
+        ShowMenu(screenPos);
+    }
+    
+    public void ShowUpgradeMenu(Vector3 screenPos, Tower tower)
+    {
+        selectedTower = tower;
+        
+        // ← ACTIVAR WHEELMENU PRIMERO ←
+        gameObject.SetActive(true);
+        
+        // Luego cambiar los contenedores
+        if (buildOptionsContainer != null)
+            buildOptionsContainer.SetActive(false);
+        if (upgradeOptionsContainer != null)
+            upgradeOptionsContainer.SetActive(true);
+        
+        UpdateUpgradeUI(tower);
+        ShowMenu(screenPos);
+    }
+
+    private void ShowMenu(Vector3 screenPos)
+    {
         rectTransform.position = screenPos;
         
-        // Activar y animar
-        gameObject.SetActive(true);
+        // Ya no activamos aquí porque ya se activó antes
+        // gameObject.SetActive(true); ← QUITADO
         
         if (currentAnimation != null)
             StopCoroutine(currentAnimation);
@@ -43,6 +79,8 @@ public class WheelMenuController : MonoBehaviour
 
     public void HideMenu()
     {
+        selectedTower = null;
+        
         if (currentAnimation != null)
             StopCoroutine(currentAnimation);
             
@@ -63,20 +101,33 @@ public class WheelMenuController : MonoBehaviour
             float t = Mathf.Clamp01(elapsed / animationDuration);
             float curveValue = scaleCurve.Evaluate(t);
 
-            // Animar escala
             transform.localScale = Vector3.one * Mathf.Lerp(startScale, endScale, curveValue);
-            
-            // Animar transparencia
             canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, curveValue);
 
             yield return null;
         }
 
-        // Asegurar valores finales
         transform.localScale = Vector3.one * endScale;
         canvasGroup.alpha = endAlpha;
 
         if (!show)
             gameObject.SetActive(false);
+    }
+    
+    private void UpdateUpgradeUI(Tower tower)
+    {
+        if (upgradeOptionsContainer != null)
+        {
+            var upgradeOptions = upgradeOptionsContainer.GetComponentsInChildren<UpgradeMenuOption>();
+            foreach (var option in upgradeOptions)
+            {
+                option.SetTower(tower);
+            }
+        }
+    }
+    
+    public Tower GetSelectedTower()
+    {
+        return selectedTower;
     }
 }

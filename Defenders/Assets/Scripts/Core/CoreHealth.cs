@@ -38,4 +38,18 @@ public class CoreHealth : MonoBehaviour
         Gizmos.DrawLine(transform.position + Vector3.left * coreSize, transform.position + Vector3.right * coreSize);
         Gizmos.DrawLine(transform.position + Vector3.forward * coreSize, transform.position + Vector3.back * coreSize);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Hurtbox"))
+        {
+            Enemy enemy = other.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                TakeDamage(enemy.DamageToCore);
+                enemy.ReachCore();
+            }
+        }
+    }
+
 }

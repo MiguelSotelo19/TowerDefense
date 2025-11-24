@@ -4,6 +4,12 @@ using UnityEngine.EventSystems;
 public class TowerSpotWD : MonoBehaviour
 {
     public static TowerSpotWD SelectedSpot;
+    
+    [Header("Tower References")]
+    public Tower currentTower;
+    
+    [Header("Visual Feedback")]
+    public GameObject highlightEffect;
 
     private void OnMouseDown()
     {
@@ -12,8 +18,34 @@ public class TowerSpotWD : MonoBehaviour
 
         SelectedSpot = this;
 
-        // Usar directamente la posición del mouse en lugar de convertir world to screen
         Vector3 mousePos = Input.mousePosition;
-        WheelMenuController.Instance.ShowMenu(mousePos);
+        
+        if (currentTower == null)
+        {
+            WheelMenuController.Instance.ShowBuildMenu(mousePos);
+        }
+        else
+        {
+            WheelMenuController.Instance.ShowUpgradeMenu(mousePos, currentTower);
+        }
+    } 
+    
+    public void SetTower(Tower tower)
+    {
+        currentTower = tower;
+    }
+    
+    public bool IsOccupied()
+    {
+        return currentTower != null;
+    }
+    
+    public void RemoveTower()
+    {
+        if (currentTower != null)
+        {
+            Destroy(currentTower.gameObject);
+            currentTower = null;
+        }
     }
 }

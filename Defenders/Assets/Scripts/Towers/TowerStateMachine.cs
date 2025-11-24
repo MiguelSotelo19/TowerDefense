@@ -24,12 +24,12 @@ public class TowerStateMachine
         switch (currentState)
         {
             case TowerState.Idle:
-                if (tower.Target != null)
+                if (tower.Targets.Count > 0)  // ← CAMBIO AQUÍ
                     ChangeState(TowerState.Attacking);
                 break;
 
             case TowerState.Attacking:
-                if (tower.Target == null)
+                if (tower.Targets.Count == 0)  // ← CAMBIO AQUÍ
                     ChangeState(TowerState.Idle);
                 break;
         }
