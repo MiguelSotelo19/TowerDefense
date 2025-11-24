@@ -12,8 +12,13 @@ public class HideWheelMenuOnClick : MonoBehaviour
             if (EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            // Cerrar menú
-            WheelMenuController.Instance.HideMenu();
+            // ← CAMBIO AQUÍ ←
+            // Verificar que el menú esté activo antes de ocultarlo
+            if (WheelMenuController.Instance != null && 
+                WheelMenuController.Instance.gameObject.activeInHierarchy)
+            {
+                WheelMenuController.Instance.HideMenu();
+            }
         }
     }
 }

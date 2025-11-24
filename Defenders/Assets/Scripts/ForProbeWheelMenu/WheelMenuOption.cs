@@ -6,6 +6,7 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
 {
     [Header("Tower Settings")]
     public GameObject towerPrefab;
+    public int towerCost = 100;
     
     [Header("Visual Feedback")]
     public float hoverScale = 1.2f;
@@ -33,10 +34,8 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void Update()
     {
-        // Animar escala suavemente
         transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * scaleSpeed);
         
-        // Animar color suavemente
         if (image != null)
         {
             image.color = Color.Lerp(image.color, targetColor, Time.deltaTime * scaleSpeed);
@@ -59,9 +58,48 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         if (TowerSpotWD.SelectedSpot == null)
             return;
+        
+        // Verificar si ya hay una torre
+        if (TowerSpotWD.SelectedSpot.IsOccupied())
+        {
+            Debug.LogWarning("Ya hay una torre en este spot!");
+            return;
+        }
+        
+        // Verificar dinero (opcional, si tienes EconomyManager)
+        if (EconomyManager.Instance != null && EconomyManager.Instance.GetBytes() < towerCost)
+        {
+            Debug.LogWarning("No hay suficientes bytes!");
+            return;
+        }
+        
+        // Pagar torre
+        if (EconomyManager.Instance != null)
+        {
+            if (!EconomyManager.Instance.SpendBytes(towerCost))
+            {
+                Debug.LogWarning("No tienes suficientes bytes!");
+                return; // Salir sin construir
+            }
+        }
 
         // Instanciar torre en el spot
-        Instantiate(towerPrefab, TowerSpotWD.SelectedSpot.transform.position, Quaternion.identity);
+        GameObject towerGO = Instantiate(towerPrefab, 
+                                        TowerSpotWD.SelectedSpot.transform.position, 
+                                        Quaternion.identity);
+        
+        // ← ESTO ES LO QUE FALTABA ←
+        // Registrar torre en el spot
+        Tower tower = towerGO.GetComponent<Tower>();
+        if (tower != null)
+        {
+            TowerSpotWD.SelectedSpot.SetTower(tower);
+            Debug.Log($"Torre '{tower.towerName}' registrada en el spot");
+        }
+        else
+        {
+            Debug.LogError("El prefab no tiene el componente Tower!");
+        }
 
         // Ocultar el menú
         WheelMenuController.Instance.HideMenu();
