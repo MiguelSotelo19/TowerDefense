@@ -11,12 +11,14 @@ public class CoreHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+        EventManager.Invoke(GlobalEvents.CoreHealthUpdated, currentHealth);
     }
 
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        Debug.Log($"Core dañado! Vida: {currentHealth}/{maxHealth}");
+        EventManager.Invoke(GlobalEvents.CoreHealthUpdated,currentHealth);  
+        Debug.Log($"Core daï¿½ado! Vida: {currentHealth}/{maxHealth}");
 
         if (currentHealth <= 0)
         {
@@ -26,8 +28,8 @@ public class CoreHealth : MonoBehaviour
 
     void GameOver()
     {
-        Debug.Log("GAME OVER - El núcleo ha sido destruido");
-        // Aquí llamarás al GameManager más adelante
+        Debug.Log("GAME OVER - El nï¿½cleo ha sido destruido");
+        // Aquï¿½ llamarï¿½s al GameManager mï¿½s adelante
     }
 
     void OnDrawGizmos()

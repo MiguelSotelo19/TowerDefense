@@ -61,6 +61,9 @@ public class WaveManager : MonoBehaviour
         {
             sp.enabled = false;
         }
+        
+        UpdateWaveUI();
+
 
         // Iniciar primera oleada después de un delay
         StartCoroutine(StartFirstWaveDelayed(3f));
@@ -82,13 +85,15 @@ public class WaveManager : MonoBehaviour
         }
 
         WaveData currentWave = waves[currentWaveIndex];
-        
+    
         isWaveActive = true;
         enemiesSpawnedThisWave = 0;
         enemiesAliveThisWave = 0;
 
         Debug.Log($"Iniciando Oleada {CurrentWave}/{TotalWaves}");
         EventManager.Invoke<int>(GlobalEvents.WaveStarted, CurrentWave);
+    
+        UpdateWaveUI();
 
         StartCoroutine(SpawnWave(currentWave));
     }
@@ -188,5 +193,14 @@ public class WaveManager : MonoBehaviour
         {
             StartNextWave();
         }
+    }
+    
+    
+    //UPDATE
+    private void UpdateWaveUI()
+    {
+        // Crear string con formato "oleada actual / total"
+        string waveText = $"{CurrentWave}/{TotalWaves}";
+        EventManager.Invoke<string>(GlobalEvents.OleadasUpdated, waveText);
     }
 }
