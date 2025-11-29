@@ -16,4 +16,5 @@ public enum GlobalEvents
     //FOR HUD
     CoreHealthUpdated,
     OleadasUpdated,
+    BytesUpdated,  
 }
