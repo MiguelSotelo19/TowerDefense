@@ -1209,7 +1209,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &237769026
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1341,6 +1341,9 @@ MonoBehaviour:
   hoverScale: 1.2
   scaleSpeed: 10
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  cannotAffordColor: {r: 1, g: 0.3, b: 0.3, a: 0.5}
+  costText: {fileID: 0}
 --- !u!1 &255278389
 GameObject:
   m_ObjectHideFlags: 0
@@ -1760,10 +1763,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WheelMenuOption
   towerPrefab: {fileID: 3902469995890632416, guid: 64ded26a63869d6488aa5a5507fd9fe3, type: 3}
-  towerCost: 100
+  towerCost: 0
   hoverScale: 1.2
   scaleSpeed: 10
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  cannotAffordColor: {r: 1, g: 0.3, b: 0.3, a: 0.5}
+  costText: {fileID: 0}
 --- !u!1 &296054232
 GameObject:
   m_ObjectHideFlags: 0
@@ -3920,13 +3926,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 099408bdf4e81354ab93bf0944dd3573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeMenuOption
-  optionType: 1
-  hoverScale: 1.2
-  scaleSpeed: 10
-  hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+  upgradeType: 0
   costText: {fileID: 0}
-  iconImage: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &595472600
 GameObject:
   m_ObjectHideFlags: 0
@@ -5792,7 +5794,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &934819154
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5924,6 +5926,9 @@ MonoBehaviour:
   hoverScale: 1.2
   scaleSpeed: 10
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  cannotAffordColor: {r: 1, g: 0.3, b: 0.3, a: 0.5}
+  costText: {fileID: 0}
 --- !u!1 &943465955
 GameObject:
   m_ObjectHideFlags: 0
@@ -6071,10 +6076,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WheelMenuOption
   towerPrefab: {fileID: 8237686440300084134, guid: 948b84db623df844ea1cc7ee7e58e629, type: 3}
-  towerCost: 100
+  towerCost: 0
   hoverScale: 1.3
   scaleSpeed: 12
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  cannotAffordColor: {r: 1, g: 0.3, b: 0.3, a: 0.5}
+  costText: {fileID: 0}
 --- !u!1 &943750993
 GameObject:
   m_ObjectHideFlags: 0
@@ -6647,6 +6655,7 @@ GameObject:
   - component: {fileID: 1018725503}
   - component: {fileID: 1018725505}
   - component: {fileID: 1018725504}
+  - component: {fileID: 1018725506}
   m_Layer: 5
   m_Name: QuantityBytes
   m_TagString: Untagged
@@ -6772,6 +6781,65 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1018725502}
   m_CullTransparentMesh: 1
+--- !u!114 &1018725506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1018725502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e5d0bdafb006c4d940daf8b7e18731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BytesDisplay
+  bytesText: {fileID: 0}
+--- !u!1 &1019902564
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1019902566}
+  - component: {fileID: 1019902565}
+  m_Layer: 0
+  m_Name: EconomyManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1019902565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019902564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8ae849156272a94a95d86891482f346, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EconomyManager
+  startingBytes: 500
+  totalBytes: 0
+--- !u!4 &1019902566
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019902564}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.93833, y: 0.05, z: -0.2945}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1037662955
 GameObject:
   m_ObjectHideFlags: 0
@@ -6791,7 +6859,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1037662956
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6923,6 +6991,9 @@ MonoBehaviour:
   hoverScale: 1.2
   scaleSpeed: 10
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  cannotAffordColor: {r: 1, g: 0.3, b: 0.3, a: 0.5}
+  costText: {fileID: 0}
 --- !u!1 &1038775043
 GameObject:
   m_ObjectHideFlags: 0
@@ -8049,13 +8120,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 099408bdf4e81354ab93bf0944dd3573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeMenuOption
-  optionType: 2
-  hoverScale: 1.2
-  scaleSpeed: 10
-  hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+  upgradeType: 0
   costText: {fileID: 0}
-  iconImage: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &1314013570
 GameObject:
   m_ObjectHideFlags: 0
@@ -8791,6 +8858,9 @@ MonoBehaviour:
   hoverScale: 1.2
   scaleSpeed: 10
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  cannotAffordColor: {r: 1, g: 0.3, b: 0.3, a: 0.5}
+  costText: {fileID: 0}
 --- !u!114 &1476584183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8897,13 +8967,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 099408bdf4e81354ab93bf0944dd3573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeMenuOption
-  optionType: 0
-  hoverScale: 1.2
-  scaleSpeed: 10
-  hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+  upgradeType: 0
   costText: {fileID: 0}
-  iconImage: {fileID: 0}
+  button: {fileID: 0}
 --- !u!1 &1550214128
 GameObject:
   m_ObjectHideFlags: 0
@@ -9013,7 +9079,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1571793804
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9145,6 +9211,9 @@ MonoBehaviour:
   hoverScale: 1.2
   scaleSpeed: 10
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  cannotAffordColor: {r: 1, g: 0.3, b: 0.3, a: 0.5}
+  costText: {fileID: 0}
 --- !u!224 &1581706121 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 922188885957075505, guid: c43d543ca7367164ca001f846d86fc94, type: 3}
@@ -9315,7 +9384,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1637745370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9918,7 +9987,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1778305621
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10050,6 +10119,9 @@ MonoBehaviour:
   hoverScale: 1.2
   scaleSpeed: 10
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  cannotAffordColor: {r: 1, g: 0.3, b: 0.3, a: 0.5}
+  costText: {fileID: 0}
 --- !u!1 &1815358643
 GameObject:
   m_ObjectHideFlags: 0
@@ -11126,3 +11198,4 @@ SceneRoots:
   - {fileID: 1637745373}
   - {fileID: 1451085884}
   - {fileID: 109403592}
+  - {fileID: 1019902566}
