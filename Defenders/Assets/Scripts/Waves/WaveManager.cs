@@ -128,6 +128,8 @@ public class WaveManager : MonoBehaviour
         // Elegir spawn point aleatorio
         SpawnPoint selectedSpawn = spawnPoints[Random.Range(0, spawnPoints.Count)];
         
+        Debug.Log($"Spawneando en: {selectedSpawn.transform.position}");
+
         // Hacer spawn usando el pool del spawn point
         selectedSpawn.SpawnEnemyFromPool(enemyPrefab);
     }
@@ -146,7 +148,8 @@ public class WaveManager : MonoBehaviour
 
     private void CheckWaveCompletion()
     {
-        // Verificar si la oleada terminó
+        Debug.Log($"Check: isSpawning={isSpawning}, enemiesAlive={enemiesAliveThisWave}, isActive={isWaveActive}");
+        
         if (!isSpawning && enemiesAliveThisWave <= 0 && isWaveActive)
         {
             CompleteWave();
