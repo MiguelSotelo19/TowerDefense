@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     //[SerializeField] private float deathAnimationDuration = 2.0f; //Aca me imagino que cuando haya animacion va a ser este xd
     [SerializeField] private float deathAnimationDuration = 0.1f;
     [Header("Enemy Stats")]
-    [SerializeField] public int damageToCore = 1;
+    [SerializeField] private int damageToCore = 1;
     public int bytes = 0;
 
     private EnemyHealthBarController healthBar;
@@ -93,7 +93,7 @@ public class Enemy : MonoBehaviour
             return;
 
         if (EventManager.Instance != null)
-            EventManager.Invoke<Enemy>(GlobalEvents.EnemyDied, this); // ← CORRECTO
+            EventManager.Invoke(GlobalEvents.EnemyDied, transform);
 
         if (followPathAgent != null)
             followPathAgent.enabled = false;
@@ -104,15 +104,7 @@ public class Enemy : MonoBehaviour
         if (animator != null)
             animator.SetBool("IsDead", true);
 
-        // ← AGREGAR VERIFICACIÓN AQUÍ ←
-        if (gameObject.activeInHierarchy)
-        {
-            StartCoroutine(WaitAndReturnToPool(deathAnimationDuration));
-        }
-        else
-        {
-            ReturnToPoolOrDisable();
-        }
+        StartCoroutine(WaitAndReturnToPool(deathAnimationDuration));
     }
 
     private IEnumerator WaitAndReturnToPool(float delay)

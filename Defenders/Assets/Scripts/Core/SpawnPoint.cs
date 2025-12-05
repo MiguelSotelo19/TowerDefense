@@ -24,7 +24,7 @@ public class SpawnPoint : MonoBehaviour
         InitializePool();
     }
 
-    /*private void Update()
+    private void Update()
     {
         spawnTimer += Time.deltaTime;
         if (spawnTimer >= spawnInterval)
@@ -32,7 +32,7 @@ public class SpawnPoint : MonoBehaviour
             SpawnEnemy();
             spawnTimer = 0f;
         }
-    }*/
+    }
 
     private void InitializePool()
     {
@@ -182,6 +182,7 @@ public class SpawnPoint : MonoBehaviour
             return;
         }
 
+        // Inicializar pool si no existe
         if (!enemyPools.ContainsKey(enemyPrefab))
         {
             InitializePoolForPrefab(enemyPrefab);
@@ -189,30 +190,28 @@ public class SpawnPoint : MonoBehaviour
 
         GameObject enemy = GetEnemyFromPool(enemyPrefab);
 
-        Debug.Log($"Enemigo antes: {enemy.transform.position}");
-        
-        enemy.transform.SetParent(null, false);
+        // Posicionar enemigo
+        enemy.transform.SetParent(null, true);
         enemy.transform.position = transform.position;
         enemy.transform.rotation = transform.rotation;
-        
-        Debug.Log($"Enemigo después: {enemy.transform.position}");
-        Debug.Log($"SpawnPoint posición: {transform.position}");
 
-
+        // Configurar pathfinding
         var pathAgent = enemy.GetComponent<FollowPathAgent>();
         if (pathAgent != null)
         {
             pathAgent.AssignSplineContainer(associatedSpline);
-            pathAgent.ResetProgress(keepWorldPosition: false); // ← Importante: false
+            pathAgent.ResetProgress(keepWorldPosition: true);
             pathAgent.enabled = true;
         }
 
+        // Configurar referencia al spawner
         var enemyComponent = enemy.GetComponent<Enemy>();
         if (enemyComponent != null)
         {
             enemyComponent.Initialize(this);
         }
 
+        // Resetear salud
         var health = enemy.GetComponent<Health>();
         if (health != null)
         {

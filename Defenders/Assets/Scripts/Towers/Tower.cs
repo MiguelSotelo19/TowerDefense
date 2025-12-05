@@ -30,11 +30,16 @@ public class Tower : MonoBehaviour
     [SerializeField] private GameObject firePoint;
     [SerializeField] private GameObject bulletPool;
     [SerializeField] private GameObject rangeDisplay;
+    [SerializeField] private AudioSource shootSound;
     
     private List<Bullet> bullets = new();
     private List<Transform> targets = new List<Transform>(); // Lista de objetivos
-
     private TowerStateMachine stateMachine;
+
+    public Transform Target
+    {
+        get { return targets.Count > 0 ? targets[0] : null; }
+    }
     
     public List<Transform> Targets => targets;
 
@@ -94,6 +99,9 @@ public class Tower : MonoBehaviour
                     available.direction = direction;
                     available.transform.position = firePoint.transform.position;
                     available.gameObject.SetActive(true);
+
+                    if (shootSound != null)
+                        shootSound.Play();
                 }
             }
             

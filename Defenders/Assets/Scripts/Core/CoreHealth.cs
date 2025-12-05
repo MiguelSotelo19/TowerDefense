@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class CoreHealth : MonoBehaviour
 {
+
     public int maxHealth = 20;
     public int currentHealth;
     public Color coreColor = Color.blue;
@@ -10,12 +11,14 @@ public class CoreHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+        EventManager.Invoke(GlobalEvents.CoreHealthUpdated, currentHealth);
     }
 
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        Debug.Log($"Core dañado! Vida: {currentHealth}/{maxHealth}");
+        EventManager.Invoke(GlobalEvents.CoreHealthUpdated,currentHealth);  
+        Debug.Log($"Core da�ado! Vida: {currentHealth}/{maxHealth}");
 
         if (currentHealth <= 0)
         {
@@ -25,13 +28,8 @@ public class CoreHealth : MonoBehaviour
 
     void GameOver()
     {
-        Debug.Log("GAME OVER - El núcleo ha sido destruido");
-        
-        // Notificar al GameManager
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.OnDefeat();
-        }
+        Debug.Log("GAME OVER - El n�cleo ha sido destruido");
+        // Aqu� llamar�s al GameManager m�s adelante
     }
 
     void OnDrawGizmos()
@@ -50,9 +48,10 @@ public class CoreHealth : MonoBehaviour
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null)
             {
-                TakeDamage(enemy.damageToCore);
+                TakeDamage(enemy.DamageToCore);
                 enemy.ReachCore();
             }
         }
     }
+
 }

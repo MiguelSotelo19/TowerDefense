@@ -16,6 +16,13 @@ public class EconomyManager : MonoBehaviour
         DontDestroyOnLoad(gameObject); 
     }
 
+    // AGREGAR ESTE MÉTODO
+    private void Start()
+    {
+        // Invocar el evento al inicio para mostrar los bytes iniciales
+        EventManager.Invoke<int>(GlobalEvents.BytesUpdated, totalBytes);
+    }
+
     public int GetBytes()
     {
         return totalBytes;
@@ -25,6 +32,9 @@ public class EconomyManager : MonoBehaviour
     {
         totalBytes += amount;
         Debug.Log($"Ganaste {amount} bytes. Total: {totalBytes}");
+        
+        // AGREGAR ESTA LÍNEA
+        EventManager.Invoke<int>(GlobalEvents.BytesUpdated, totalBytes);
     }
 
     public bool SpendBytes(int amount)
@@ -33,6 +43,9 @@ public class EconomyManager : MonoBehaviour
         {
             totalBytes -= amount;
             Debug.Log($"Gastaste {amount} bytes. Restante: {totalBytes}");
+            
+            // AGREGAR ESTA LÍNEA
+            EventManager.Invoke<int>(GlobalEvents.BytesUpdated, totalBytes);
             return true;
         }
         else

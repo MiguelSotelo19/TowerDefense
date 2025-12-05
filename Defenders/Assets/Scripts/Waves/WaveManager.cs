@@ -61,6 +61,9 @@ public class WaveManager : MonoBehaviour
         {
             sp.enabled = false;
         }
+        
+        UpdateWaveUI();
+
 
         // Iniciar primera oleada después de un delay
         StartCoroutine(StartFirstWaveDelayed(3f));
@@ -82,13 +85,15 @@ public class WaveManager : MonoBehaviour
         }
 
         WaveData currentWave = waves[currentWaveIndex];
-        
+    
         isWaveActive = true;
         enemiesSpawnedThisWave = 0;
         enemiesAliveThisWave = 0;
 
         Debug.Log($"Iniciando Oleada {CurrentWave}/{TotalWaves}");
         EventManager.Invoke<int>(GlobalEvents.WaveStarted, CurrentWave);
+    
+        UpdateWaveUI();
 
         StartCoroutine(SpawnWave(currentWave));
     }
@@ -128,8 +133,6 @@ public class WaveManager : MonoBehaviour
         // Elegir spawn point aleatorio
         SpawnPoint selectedSpawn = spawnPoints[Random.Range(0, spawnPoints.Count)];
         
-        Debug.Log($"Spawneando en: {selectedSpawn.transform.position}");
-
         // Hacer spawn usando el pool del spawn point
         selectedSpawn.SpawnEnemyFromPool(enemyPrefab);
     }
@@ -148,8 +151,7 @@ public class WaveManager : MonoBehaviour
 
     private void CheckWaveCompletion()
     {
-        Debug.Log($"Check: isSpawning={isSpawning}, enemiesAlive={enemiesAliveThisWave}, isActive={isWaveActive}");
-        
+        // Verificar si la oleada terminó
         if (!isSpawning && enemiesAliveThisWave <= 0 && isWaveActive)
         {
             CompleteWave();
@@ -191,5 +193,14 @@ public class WaveManager : MonoBehaviour
         {
             StartNextWave();
         }
+    }
+    
+    
+    //UPDATE
+    private void UpdateWaveUI()
+    {
+        // Crear string con formato "oleada actual / total"
+        string waveText = $"{CurrentWave}/{TotalWaves}";
+        EventManager.Invoke<string>(GlobalEvents.OleadasUpdated, waveText);
     }
 }
