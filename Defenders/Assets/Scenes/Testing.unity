@@ -1759,7 +1759,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f3829f32497d3748b95568d9669fc25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WheelMenuOption
-  towerPrefab: {fileID: 8588434042699085736, guid: 819c910e6f62fc648953cd032bbf7e16, type: 3}
+  towerPrefab: {fileID: 3902469995890632416, guid: 64ded26a63869d6488aa5a5507fd9fe3, type: 3}
   towerCost: 100
   hoverScale: 1.2
   scaleSpeed: 10
