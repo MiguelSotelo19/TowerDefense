@@ -62,7 +62,8 @@ public class WaveManager : MonoBehaviour
             sp.enabled = false;
         }
         
-        UpdateWaveUI();
+        //TEMPORAL - Migue
+        //UpdateWaveUI();
 
 
         // Iniciar primera oleada después de un delay

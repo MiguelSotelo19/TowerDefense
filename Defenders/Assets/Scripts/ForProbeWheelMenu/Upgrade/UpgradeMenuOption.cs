@@ -168,12 +168,35 @@ public class UpgradeMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
     }
     
-    private void UpgradeTower()
+    //TEMPORAL - Migue
+    /*private void UpgradeTower()
     {
         if (currentTower.CanUpgrade())
         {
             currentTower.Upgrade();
             UpdateUI();
+        }
+    }*/
+    private void UpgradeTower()
+    {
+        if (currentTower.CanUpgrade())
+        {
+            int cost = currentTower.GetUpgradeCost();
+            
+            // Verificar y gastar dinero
+            if (EconomyManager.Instance != null)
+            {
+                if (!EconomyManager.Instance.SpendBytes(cost))
+                {
+                    Debug.LogWarning("No tienes suficientes bytes para mejorar!");
+                    return;
+                }
+            }
+            
+            currentTower.Upgrade();
+            
+            // Cerrar menú
+            WheelMenuController.Instance.HideMenu();
         }
     }
     

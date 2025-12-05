@@ -20,7 +20,7 @@ public class FollowPathAgent : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _rb.maxLinearVelocity = movementSpeed;
 
-        // Evitar errores si no se asign� splineContainer
+        // Evitar errores si no se asign� splineContainer
         if (splineContainer != null && splineContainer.Splines.Count > 0)
             _currentPath = splineContainer.Splines[0];
         else
@@ -59,8 +59,19 @@ public class FollowPathAgent : MonoBehaviour
         {
             if (!keepWorldPosition)
             {
-                _currentPosition = _currentPath.EvaluatePosition(0f);
-                transform.position = _currentPosition;
+                // ← CAMBIO AQUÍ ←
+                // Obtener posición local del spline
+                Vector3 localPosition = _currentPath.EvaluatePosition(0f);
+                
+                // Convertir a posición mundial usando el transform del SplineContainer
+                if (splineContainer != null)
+                {
+                    transform.position = splineContainer.transform.TransformPoint(localPosition);
+                }
+                else
+                {
+                    transform.position = localPosition;
+                }
             }
 
             _tangent = _currentPath.EvaluateTangent(0f);
