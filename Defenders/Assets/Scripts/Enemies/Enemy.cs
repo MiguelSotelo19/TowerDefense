@@ -58,23 +58,23 @@ public class Enemy : MonoBehaviour
         Die(giveReward: true);
     }
 
-    /*private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Core"))
         {
             Debug.Log("Llego a core");
             ReachCore();
         }
-    }*/
+    }
 
-   private void HandleHealthChange(float current, float max)
-{
+    private void HandleHealthChange(float current, float max)
+    {
     if (current > 0 && animator != null)
         animator.SetTrigger("Hit");
 
     if (healthBar != null)
         healthBar.SetHealth(current, max);
-}
+    }
 
 
     public void ReachCore()

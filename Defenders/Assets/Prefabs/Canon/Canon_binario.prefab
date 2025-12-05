@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 8588434042699085736}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.65, y: 0.5, z: 3}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -53,8 +53,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.8790249, y: 3.8936765, z: 1.6317658}
-  m_Center: {x: 0, y: 1.4468383, z: 0}
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5343754136994930125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,12 +67,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83628a8d91503f746902e69dfb09aaf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower
+  towerName: Antivirus
+  currentLevel: 1
+  maxLevel: 3
   range: 5
   enemyTag: Enemy
+  fireRate: 0.5
+  maxTargets: 1
+  baseCost: 100
+  upgradeCosts: 96000000fa000000
+  levelMaterials: []
+  levelModels: []
   bulletPrefab: {fileID: 1234885817971972489, guid: 232134b26f2b6ae48b22c090182b8212, type: 3}
   firePoint: {fileID: 2789923330652923354, guid: 948b84db623df844ea1cc7ee7e58e629, type: 3}
   bulletPool: {fileID: 2789923330652923354, guid: 948b84db623df844ea1cc7ee7e58e629, type: 3}
   rangeDisplay: {fileID: 1105219568423217618, guid: 948b84db623df844ea1cc7ee7e58e629, type: 3}
+  shootSound: {fileID: 0}
 --- !u!1001 &5291094354032808231
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -83,15 +93,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: cf7d032ac931cab40a69ab298a976878, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.63
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cf7d032ac931cab40a69ab298a976878, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.01747
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cf7d032ac931cab40a69ab298a976878, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.81588006
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cf7d032ac931cab40a69ab298a976878, type: 3}
       propertyPath: m_LocalRotation.w
