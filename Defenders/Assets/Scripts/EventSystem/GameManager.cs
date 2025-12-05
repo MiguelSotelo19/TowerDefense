@@ -8,7 +8,9 @@ public class GameManager : MonoBehaviour
     [Header("Game State")]
     private bool gameEnded = false;
     private float gameStartTime;
-    
+    private bool isPaused = false;
+
+
     [Header("Statistics")]
     public int enemiesKilled = 0;
     public int wavesCompleted = 0;
@@ -16,6 +18,7 @@ public class GameManager : MonoBehaviour
     [Header("UI References")]
     public GameObject victoryPanel;
     public GameObject defeatPanel;
+    public GameObject pausePanel;
 
     private void Awake()
     {
@@ -37,6 +40,8 @@ public class GameManager : MonoBehaviour
         // Ocultar paneles al inicio
         if (victoryPanel != null) victoryPanel.SetActive(false);
         if (defeatPanel != null) defeatPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
+
     }
 
     private void OnEnable()
@@ -67,6 +72,7 @@ public class GameManager : MonoBehaviour
     {
         if (gameEnded) return;
         gameEnded = true;
+        isPaused = false;
 
         Debug.Log("¡VICTORIA!");
         
@@ -81,6 +87,7 @@ public class GameManager : MonoBehaviour
     {
         if (gameEnded) return;
         gameEnded = true;
+        isPaused = false;
 
         Debug.Log("¡DERROTA!");
         
@@ -110,6 +117,30 @@ public class GameManager : MonoBehaviour
         Debug.Log("Saliendo del juego...");
         Application.Quit();
     }
+
+    public void TogglePause()
+    {
+        // Evitar pausar después de victoria/derrota
+        if (gameEnded) return;
+
+        isPaused = !isPaused;
+
+        if (isPaused)
+        {
+            Time.timeScale = 0f;
+
+            if (pausePanel != null)
+                pausePanel.SetActive(true);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+
+            if (pausePanel != null)
+                pausePanel.SetActive(false);
+        }
+    }
+
 
     // Getters para las estadísticas
     public int GetEnemiesKilled() => enemiesKilled;

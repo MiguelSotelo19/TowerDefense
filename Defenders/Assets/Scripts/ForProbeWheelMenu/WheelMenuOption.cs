@@ -65,8 +65,15 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
             targetColor = originalColor;
         }
 
+        // Si NO hay objeto de texto asignado, crearlo automáticamente
+        if (costText == null)
+        {
+            CreateCostTextObject();
+        }
+
         UpdateCostDisplay();
     }
+
 
     private void Update()
     {
@@ -110,7 +117,17 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         if (costText != null)
         {
-            costText.text = $"{actualCost}";
+            if (towerPrefab != null)
+            {
+                Tower tower = towerPrefab.GetComponent<Tower>();
+                string name = tower != null ? tower.towerName : "Torre";
+
+                costText.text = $"{name} — {actualCost} bytes";
+            }
+            else
+            {
+                costText.text = $"{actualCost} bytes";
+            }
 
             if (EconomyManager.Instance != null)
             {
@@ -119,6 +136,7 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
             }
         }
     }
+
 
     public void BuildTower()
     {
@@ -189,4 +207,27 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         WheelMenuController.Instance.HideMenu();
     }
+
+    private void CreateCostTextObject()
+    {
+        GameObject textGO = new GameObject("TowerCostText");
+        textGO.transform.SetParent(transform, false);
+
+        RectTransform rect = textGO.AddComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero; 
+        rect.anchorMax = Vector2.one; 
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        costText = textGO.AddComponent<TextMeshProUGUI>();
+        costText.fontSize = 20;
+        costText.alignment = TextAlignmentOptions.Center;
+        costText.color = Color.black;
+
+        // Auto-size opcional
+        costText.enableAutoSizing = true;
+        costText.fontSizeMin = 12;
+        costText.fontSizeMax = 20;
+    }
+
 }

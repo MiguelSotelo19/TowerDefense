@@ -57,7 +57,10 @@ public class Tower : MonoBehaviour
     {
         if (rangeDisplay != null)
         {
-            rangeDisplay.transform.localScale = new Vector3(range / 5f, 1f, range / 5f);
+            float scale = (range * 2f) / 10f;
+            rangeDisplay.transform.localScale = new Vector3(scale, 1f, scale);
+
+
             rangeDisplay.SetActive(false);
         }
 
@@ -148,7 +151,7 @@ public class Tower : MonoBehaviour
 
         foreach (Enemy enemy in enemies)
         {
-            float dist = Vector3.Distance(transform.position, enemy.transform.position);
+            float dist = Vector3.Distance(meshRenderer.bounds.center, enemy.transform.position);
 
             if (dist <= range)
             {

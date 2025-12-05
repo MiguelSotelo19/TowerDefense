@@ -123,6 +123,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7993836799113091694}
   - component: {fileID: 8021190050451591088}
+  - component: {fileID: 8666939909273558860}
+  - component: {fileID: 6872306074224583674}
   m_Layer: 0
   m_Name: TowerSpot_01
   m_TagString: Untagged
@@ -158,3 +160,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 736256da6bc91004c827d5eb65e85d9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerSpot
+  isAvailable: 1
+  placedTower: {fileID: 0}
+  placementOffset: {x: 0, y: 0.5, z: 0}
+  availableColor: {r: 0, g: 1, b: 0, a: 0.5}
+  occupiedColor: {r: 1, g: 0, b: 0, a: 0.5}
+  spotRadius: 0.8
+--- !u!114 &8666939909273558860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7068331441380530449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4677171b312264f9fea1bd5fcbf631, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerSpotWD
+  currentTower: {fileID: 0}
+  highlightEffect: {fileID: 0}
+--- !u!65 &6872306074224583674
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7068331441380530449}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

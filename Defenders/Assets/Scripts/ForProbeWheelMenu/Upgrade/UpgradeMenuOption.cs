@@ -2,10 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>
-/// Botón de mejora en el menú radial.
-/// Se configura automáticamente según la torre seleccionada.
-/// </summary>
 public class UpgradeMenuOption : MonoBehaviour
 {
     [Header("Upgrade Type")]
@@ -23,52 +19,43 @@ public class UpgradeMenuOption : MonoBehaviour
             button = GetComponent<Button>();
 
         if (button != null)
-        {
             button.onClick.AddListener(OnClick);
-        }
     }
 
     public void SetTower(Tower tower)
     {
         currentTower = tower;
+        CreateCostTextIfMissing();
         UpdateUI();
     }
+
 
     private void UpdateUI()
     {
         if (currentTower == null) return;
 
-        switch (upgradeType)
-        {
-            case UpgradeType.Upgrade:
-                UpdateUpgradeButton();
-                break;
-
-            case UpgradeType.Sell:
-                UpdateSellButton();
-                break;
-        }
+        if (upgradeType == UpgradeType.Upgrade)
+            UpdateUpgradeButton();
+        else
+            UpdateSellButton();
     }
 
     private void UpdateUpgradeButton()
     {
         bool canUpgrade = currentTower.CanUpgrade();
 
-        // Habilitar/deshabilitar botón
         if (button != null)
-        {
             button.interactable = canUpgrade;
-        }
 
-        // Actualizar texto de costo
         if (costText != null)
         {
             if (canUpgrade)
             {
                 int cost = currentTower.GetUpgradeCost();
-                costText.text = $"${cost}";
+                string towerName = currentTower.towerName;
 
-                // Verificar si tiene suficiente dinero
+                costText.text = $"Mejorar — {cost} bytes";
+
                 if (EconomyManager.Instance != null)
                 {
                     bool canAfford = EconomyManager.Instance.GetBytes() >= cost;
@@ -77,7 +64,7 @@ public class UpgradeMenuOption : MonoBehaviour
             }
             else
             {
-                costText.text = "MAX";
+                costText.text = $"{currentTower.towerName} (MAX)";
                 costText.color = Color.yellow;
             }
         }
@@ -85,35 +72,26 @@ public class UpgradeMenuOption : MonoBehaviour
 
     private void UpdateSellButton()
     {
-        // Calcular valor de venta (50% del costo total invertido)
         int sellValue = CalculateSellValue();
 
         if (costText != null)
         {
-            costText.text = $"+${sellValue}";
-            costText.color = Color.green;
+            costText.text = $"Vender — +{sellValue} bytes";
+            costText.color = Color.white;
         }
 
         if (button != null)
-        {
             button.interactable = true;
-        }
     }
 
     private void OnClick()
     {
         if (currentTower == null) return;
 
-        switch (upgradeType)
-        {
-            case UpgradeType.Upgrade:
-                TryUpgrade();
-                break;
-
-            case UpgradeType.Sell:
-                TrySell();
-                break;
-        }
+        if (upgradeType == UpgradeType.Upgrade)
+            TryUpgrade();
+        else
+            TrySell();
     }
 
     private void TryUpgrade()
@@ -126,7 +104,6 @@ public class UpgradeMenuOption : MonoBehaviour
 
         int cost = currentTower.GetUpgradeCost();
 
-        // Verificar dinero
         if (EconomyManager.Instance != null)
         {
             if (EconomyManager.Instance.GetBytes() < cost)
@@ -135,25 +112,17 @@ public class UpgradeMenuOption : MonoBehaviour
                 return;
             }
 
-            // Pagar y mejorar
             if (EconomyManager.Instance.SpendBytes(cost))
             {
                 currentTower.Upgrade();
-                Debug.Log($"✅ Torre mejorada a nivel {currentTower.currentLevel}");
-
-                // Actualizar UI
                 UpdateUI();
 
-                // Si llegó al máximo, cerrar menú
                 if (!currentTower.CanUpgrade())
-                {
                     WheelMenuController.Instance.HideMenu();
-                }
             }
         }
         else
         {
-            // Si no hay EconomyManager, mejorar directamente
             currentTower.Upgrade();
             UpdateUI();
         }
@@ -163,20 +132,12 @@ public class UpgradeMenuOption : MonoBehaviour
     {
         int sellValue = CalculateSellValue();
 
-        // Devolver dinero
         if (EconomyManager.Instance != null)
-        {
             EconomyManager.Instance.AddBytes(sellValue);
-        }
 
-        // Encontrar el spot y eliminar la torre
         if (TowerSpotWD.SelectedSpot != null)
-        {
             TowerSpotWD.SelectedSpot.RemoveTower();
-            Debug.Log($"💰 Torre vendida por {sellValue} bytes");
-        }
 
-        // Cerrar menú
         WheelMenuController.Instance.HideMenu();
     }
 
@@ -184,19 +145,37 @@ public class UpgradeMenuOption : MonoBehaviour
     {
         if (currentTower == null) return 0;
 
-        // Valor = costo base + suma de upgrades hechos (todo al 50%)
-        int totalInvested = currentTower.baseCost;
+        int total = currentTower.baseCost;
 
         for (int i = 0; i < currentTower.currentLevel - 1; i++)
         {
             if (i < currentTower.upgradeCosts.Length)
-            {
-                totalInvested += currentTower.upgradeCosts[i];
-            }
+                total += currentTower.upgradeCosts[i];
         }
 
-        return Mathf.RoundToInt(totalInvested * 0.5f); // 50% de devolución
+        return Mathf.RoundToInt(total * 0.5f);
     }
+    private void CreateCostTextIfMissing()
+    {
+        if (costText != null) return;
+
+        GameObject textGO = new GameObject("UpgradeCostText");
+        textGO.transform.SetParent(transform, false);
+
+        RectTransform rect = textGO.AddComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        costText = textGO.AddComponent<TextMeshProUGUI>();
+        costText.alignment = TextAlignmentOptions.Center;
+        costText.enableAutoSizing = true;
+        costText.fontSizeMin = 14;
+        costText.fontSizeMax = 28;
+        costText.color = Color.white;
+    }
+
 }
 
 public enum UpgradeType

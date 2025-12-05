@@ -1397,7 +1397,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476448eb6a91eb64ea0d86be1650e1fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Cannon
-  towerName: Cannon
+  towerName: "Ca\xF1\xF3n"
   currentLevel: 1
   maxLevel: 3
   range: 3
