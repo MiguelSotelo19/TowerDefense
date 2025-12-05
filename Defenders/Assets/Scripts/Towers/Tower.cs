@@ -3,135 +3,166 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Clase base simple para todas las torres.
+/// Tiene la funcionalidad común: disparar, detectar enemigos, mejorar.
+/// </summary>
 public class Tower : MonoBehaviour
 {
     [Header("Tower Info")]
-    public string towerName = "Antivirus";
+    public string towerName = "Torre";
     public int currentLevel = 1;
     public int maxLevel = 3;
-    
+
     [Header("Combat Stats")]
-    public float range = 10f;
-    public string enemyTag = "Enemy";
-    public float fireRate = 0.5f; // Tiempo entre disparos
-    public int maxTargets = 1; // Cantidad de objetivos simultáneos
-    
-    [Header("Upgrade Settings")]
+    public float range = 5f; // ← Cambiado a 5 como querías
+    public float fireRate = 0.5f;
+    public int maxTargets = 1;
+    public int damage = 25;
+
+    [Header("Economy")]
     public int baseCost = 100;
-    public int[] upgradeCosts = new int[] { 150, 250 }; // Costo nivel 2 y 3
-    
-    [Header("Visual Settings")]
-    public Material[] levelMaterials; // Materiales por nivel
-    public GameObject[] levelModels; // Opcional: modelos diferentes
-    private MeshRenderer meshRenderer;
-    
-    [Header("Combat References")]
-    [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private GameObject firePoint;
-    [SerializeField] private GameObject bulletPool;
-    [SerializeField] private GameObject rangeDisplay;
-    [SerializeField] private AudioSource shootSound;
-    
-    private List<Bullet> bullets = new();
-    private List<Transform> targets = new List<Transform>(); // Lista de objetivos
-    private TowerStateMachine stateMachine;
+    public int[] upgradeCosts = new int[] { 150, 250 };
 
-    public Transform Target
-    {
-        get { return targets.Count > 0 ? targets[0] : null; }
-    }
-    
-    public List<Transform> Targets => targets;
+    [Header("References")]
+    [SerializeField] protected GameObject bulletPrefab;
+    [SerializeField] protected GameObject firePoint;
+    [SerializeField] protected GameObject bulletPool;
+    [SerializeField] protected GameObject rangeDisplay;
+    [SerializeField] protected AudioSource shootSound;
 
-    private void Awake()
+    [Header("Visuals")]
+    [SerializeField] protected Material[] levelMaterials;
+    protected MeshRenderer meshRenderer;
+
+    // Sistema interno
+    protected List<Bullet> bullets = new List<Bullet>();
+    protected List<Transform> targets = new List<Transform>();
+    protected TowerStateMachine stateMachine;
+
+    // Propiedades públicas para acceder a los targets
+    public Transform PrimaryTarget => targets.Count > 0 ? targets[0] : null;
+    public List<Transform> Targets => targets; // ← ESTO FALTABA
+
+    // ========== UNITY LIFECYCLE ==========
+
+    protected virtual void Awake()
     {
-        // Inicializar pool de balas
-        for (int i = 0; i < 50; i++)
-        {
-            var instance = Instantiate(bulletPrefab, bulletPool.transform);
-            var bullet = instance.GetComponent<Bullet>();
-            bullets.Add(bullet);
-            instance.SetActive(false);
-        }
-        
+        InitializeBullets();
         stateMachine = new TowerStateMachine(this);
         meshRenderer = GetComponentInChildren<MeshRenderer>();
-        
-        // Aplicar stats del nivel inicial
-        ApplyLevelStats();
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         if (rangeDisplay != null)
         {
-            rangeDisplay.transform.localScale = new Vector3(range / 5f, 1f, range / 5f);
+            float scale = (range * 2f) / 10f;
+            rangeDisplay.transform.localScale = new Vector3(scale, 1f, scale);
+
+
             rangeDisplay.SetActive(false);
         }
-        
+
         UpdateVisuals();
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         FindTargets();
         AimAtPrimaryTarget();
-        stateMachine.Update();
+        stateMachine?.Update();
     }
 
-    public IEnumerator FireRoutine()
+    // ========== INICIALIZACIÓN ==========
+
+    private void InitializeBullets()
+    {
+        if (bulletPrefab == null || bulletPool == null) return;
+
+        for (int i = 0; i < 50; i++)
+        {
+            GameObject instance = Instantiate(bulletPrefab, bulletPool.transform);
+            Bullet bullet = instance.GetComponent<Bullet>();
+            bullets.Add(bullet);
+            instance.SetActive(false);
+        }
+    }
+
+    // ========== SISTEMA DE DISPARO ==========
+
+    public virtual IEnumerator FireRoutine()
     {
         while (targets.Count > 0)
         {
-            // Disparar a cada objetivo disponible según maxTargets
-            int targetsToFire = Mathf.Min(targets.Count, maxTargets);
-            
-            for (int i = 0; i < targetsToFire; i++)
-            {
-                if (targets[i] == null) continue;
-                
-                var available = bullets.FirstOrDefault(x => !x.gameObject.activeInHierarchy);
-                if (available)
-                {
-                    // Calcular dirección hacia el objetivo específico
-                    Vector3 direction = (targets[i].position - firePoint.transform.position).normalized;
-                    
-                    available.direction = direction;
-                    available.transform.position = firePoint.transform.position;
-                    available.gameObject.SetActive(true);
-
-                    if (shootSound != null)
-                        shootSound.Play();
-                }
-            }
-            
+            FireAtTargets();
             yield return new WaitForSeconds(fireRate);
         }
     }
 
-    private void FindTargets()
+    protected virtual void FireAtTargets()
+    {
+        // Dispara a los primeros N enemigos según maxTargets
+        int targetsToFire = Mathf.Min(targets.Count, maxTargets);
+
+        for (int i = 0; i < targetsToFire; i++)
+        {
+            if (targets[i] == null) continue;
+            FireBullet(targets[i]);
+        }
+    }
+
+    protected virtual void FireBullet(Transform target)
+    {
+        Bullet available = bullets.FirstOrDefault(x => !x.gameObject.activeInHierarchy);
+        if (available == null) return;
+
+        Vector3 direction = (target.position - firePoint.transform.position).normalized;
+
+        // Asignar propiedades a la bala desde la torre (importante)
+        available.direction = direction;
+        available.transform.position = firePoint.transform.position;
+
+        // Pasar stats que dependen de la torre (estimulación para que el prefab no domine)
+        available.SetDamage(damage);
+        available.SetSpeed(available.speed); // opcional: si quieres escalar speed por torre, reemplaza available.speed por un valor calculado
+        available.SetMaxRange(available.maxRange); // si quieres cambiar maxRange desde la torre, pásalo aquí
+        available.SetPierce(false); // default; las torres que permiten pierce pueden sobrescribir en su FireBullet
+        available.SetExplosionRadius(0f); // base: sin explosión; Cannon sobrescribe
+
+        // Si quieres que la bala siga al objetivo por defecto comentalo:
+        available.SetFollowTarget(false, null);
+
+        available.gameObject.SetActive(true);
+
+        if (shootSound != null)
+            shootSound.Play();
+    }
+
+
+    // ========== DETECTAR ENEMIGOS ==========
+
+    protected virtual void FindTargets()
     {
         targets.Clear();
-        
+
         Enemy[] enemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
-        
-        // Crear lista de enemigos en rango ordenados por distancia
         List<(Enemy enemy, float distance)> enemiesInRange = new List<(Enemy, float)>();
-        
+
         foreach (Enemy enemy in enemies)
         {
-            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-            
-            if (distanceToEnemy <= range)
+            float dist = Vector3.Distance(meshRenderer.bounds.center, enemy.transform.position);
+
+            if (dist <= range)
             {
-                enemiesInRange.Add((enemy, distanceToEnemy));
+                enemiesInRange.Add((enemy, dist));
             }
         }
-        
-        // Ordenar por distancia (más cercano primero)
+
+        // Ordenar por distancia
         enemiesInRange.Sort((a, b) => a.distance.CompareTo(b.distance));
-        
-        // Tomar los primeros N enemigos según maxTargets
+
+        // Tomar los más cercanos
         int count = Mathf.Min(enemiesInRange.Count, maxTargets);
         for (int i = 0; i < count; i++)
         {
@@ -139,14 +170,11 @@ public class Tower : MonoBehaviour
         }
     }
 
-    private void AimAtPrimaryTarget()
+    protected virtual void AimAtPrimaryTarget()
     {
-        if (targets.Count == 0) return;
+        if (PrimaryTarget == null) return;
 
-        Transform primaryTarget = targets[0];
-        if (primaryTarget == null) return;
-
-        Vector3 dir = primaryTarget.position - transform.position;
+        Vector3 dir = PrimaryTarget.position - transform.position;
         Quaternion lookRotation = Quaternion.LookRotation(dir);
         Vector3 rotation = lookRotation.eulerAngles;
 
@@ -154,129 +182,75 @@ public class Tower : MonoBehaviour
     }
 
     // ========== SISTEMA DE MEJORAS ==========
-    
+
     public bool CanUpgrade()
     {
         return currentLevel < maxLevel;
     }
-    
+
     public int GetUpgradeCost()
     {
         if (!CanUpgrade()) return 0;
-        
-        int costIndex = currentLevel - 1; // nivel 1 → índice 0
+
+        int costIndex = currentLevel - 1;
+        if (costIndex >= upgradeCosts.Length) return 0;
+
         return upgradeCosts[costIndex];
     }
-    
-    public void Upgrade()
+
+    public virtual void Upgrade()
     {
         if (!CanUpgrade())
         {
             Debug.LogWarning($"{towerName} ya está al nivel máximo!");
             return;
         }
-        
-        /*int cost = GetUpgradeCost();
-        
-        // Verificar dinero
-        if (EconomyManager.Instance != null && EconomyManager.Instance.GetBytes() < cost)
-        {
-            Debug.LogWarning("No hay suficientes bytes para mejorar!");
-            return;
-        }
-        
-        // Pagar mejora
-        if (EconomyManager.Instance != null)
-        {
-            EconomyManager.Instance.SpendBytes(cost);
-        }*/
-        
-        // Subir nivel
+
         currentLevel++;
-        
-        // Aplicar stats del nuevo nivel
-        ApplyLevelStats();
-        
-        // Actualizar visuales
+        ApplyLevelStats(); // Las torres específicas implementan esto
         UpdateVisuals();
-        
+
         Debug.Log($"{towerName} mejorada a nivel {currentLevel}!");
-        Debug.Log(GetTowerInfo());
     }
-    
-    private void ApplyLevelStats()
+
+    // Este método lo sobrescribe cada torre para cambiar sus stats
+    protected virtual void ApplyLevelStats()
     {
-        switch (currentLevel)
-        {
-            case 1: // Antivirus estándar
-                fireRate = 0.5f;
-                maxTargets = 1;
-                break;
-                
-            case 2: // Antivirus Pro - más rápido
-                fireRate = 0.25f; // 2x más rápido
-                maxTargets = 1;
-                break;
-                
-            case 3: // Antivirus 360° - dos objetivos
-                fireRate = 0.35f; // velocidad intermedia
-                maxTargets = 2;
-                break;
-        }
+        // Las clases hijas definen qué pasa en cada nivel
     }
-    
-    private void UpdateVisuals()
+
+    // ========== VISUALES ==========
+
+    protected virtual void UpdateVisuals()
     {
-        // Cambiar material según nivel
+        // Cambiar material
         if (levelMaterials != null && levelMaterials.Length > 0 && meshRenderer != null)
         {
-            int materialIndex = Mathf.Clamp(currentLevel - 1, 0, levelMaterials.Length - 1);
-            if (levelMaterials[materialIndex] != null)
+            int index = Mathf.Clamp(currentLevel - 1, 0, levelMaterials.Length - 1);
+            if (levelMaterials[index] != null)
             {
-                meshRenderer.material = levelMaterials[materialIndex];
+                meshRenderer.material = levelMaterials[index];
             }
         }
-        
-        // Cambiar modelo completo si se configuró (opcional)
-        if (levelModels != null && levelModels.Length > 0)
-        {
-            // Desactivar todos
-            foreach (var model in levelModels)
-            {
-                if (model != null) model.SetActive(false);
-            }
-            
-            // Activar el del nivel actual
-            int modelIndex = Mathf.Clamp(currentLevel - 1, 0, levelModels.Length - 1);
-            if (levelModels[modelIndex] != null)
-            {
-                levelModels[modelIndex].SetActive(true);
-            }
-        }
-        
-        // Actualizar rango visual si existe
+
+        // Actualizar rango visual
         if (rangeDisplay != null)
         {
             rangeDisplay.transform.localScale = new Vector3(range / 5f, 1f, range / 5f);
         }
     }
-    
-    public string GetTowerInfo()
+
+    // ========== INFORMACIÓN ==========
+
+    public virtual string GetTowerInfo()
     {
-        string levelName = currentLevel switch
-        {
-            1 => "Antivirus Estándar",
-            2 => "Antivirus Pro",
-            3 => "Antivirus 360°",
-            _ => "Desconocido"
-        };
-        
-        string info = $"{levelName}\n";
+        string info = $"{towerName}\n";
         info += $"Nivel {currentLevel}/{maxLevel}\n";
-        info += $"Velocidad: {(1f/fireRate):F1} disparos/s\n";
+        info += $"Velocidad: {(1f / fireRate):F1} disparos/s\n";
+        info += $"Daño: {damage}\n";
         info += $"Objetivos: {maxTargets}\n";
         info += $"Rango: {range:F1}\n";
-        
+
         if (CanUpgrade())
         {
             info += $"\nMejora: {GetUpgradeCost()} bytes";
@@ -285,25 +259,71 @@ public class Tower : MonoBehaviour
         {
             info += "\n¡NIVEL MÁXIMO!";
         }
-        
+
         return info;
     }
 
-    private void OnDrawGizmosSelected()
+    // ========== GIZMOS & MOUSE ==========
+
+    protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, range);
     }
 
-    private void OnMouseEnter()
+    protected virtual void OnMouseEnter()
     {
         if (rangeDisplay != null)
             rangeDisplay.SetActive(true);
     }
 
-    private void OnMouseExit()
+    protected virtual void OnMouseExit()
     {
         if (rangeDisplay != null)
             rangeDisplay.SetActive(false);
+    }
+
+    // ========== CLICK HANDLING ==========
+
+    protected virtual void OnMouseDown()
+    {
+        // Ignorar si hacemos click sobre UI
+        if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        // Buscar el spot en el que está esta torre
+        TowerSpotWD parentSpot = GetComponentInParent<TowerSpotWD>();
+        if (parentSpot == null)
+        {
+            // Si la torre no es hija del spot, buscar el más cercano
+            TowerSpotWD[] allSpots = FindObjectsByType<TowerSpotWD>(FindObjectsSortMode.None);
+            float closestDistance = float.MaxValue;
+
+            foreach (var spot in allSpots)
+            {
+                float distance = Vector3.Distance(transform.position, spot.transform.position);
+                if (distance < closestDistance && distance < 0.5f) // Muy cerca = es su spot
+                {
+                    closestDistance = distance;
+                    parentSpot = spot;
+                }
+            }
+        }
+
+        if (parentSpot != null)
+        {
+            // Seleccionar el spot
+            TowerSpotWD.SelectedSpot = parentSpot;
+
+            // Mostrar menú de upgrade
+            Vector3 mousePos = Input.mousePosition;
+            WheelMenuController.Instance.ShowUpgradeMenu(mousePos, this);
+
+            Debug.Log($"🔧 Click en torre {towerName} - Mostrando menú de upgrade");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ No se encontró TowerSpot para esta torre!");
+        }
     }
 }

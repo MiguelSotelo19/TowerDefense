@@ -24,7 +24,7 @@ public class SpawnPoint : MonoBehaviour
         InitializePool();
     }
 
-    private void Update()
+    /*private void Update()
     {
         spawnTimer += Time.deltaTime;
         if (spawnTimer >= spawnInterval)
@@ -32,7 +32,7 @@ public class SpawnPoint : MonoBehaviour
             SpawnEnemy();
             spawnTimer = 0f;
         }
-    }
+    }*/
 
     private void InitializePool()
     {
@@ -174,7 +174,7 @@ public class SpawnPoint : MonoBehaviour
     }
 
     // Método llamado por WaveManager para spawear enemigos
-    public void SpawnEnemyFromPool(GameObject enemyPrefab)
+    /*public void SpawnEnemyFromPool(GameObject enemyPrefab)
     {
         if (enemyPrefab == null || associatedSpline == null)
         {
@@ -218,6 +218,58 @@ public class SpawnPoint : MonoBehaviour
             health.ResetHealth();
         }
 
+        enemy.SetActive(true);
+    }*/
+
+    public void SpawnEnemyFromPool(GameObject enemyPrefab)
+    {
+        if (enemyPrefab == null || associatedSpline == null)
+        {
+            Debug.LogWarning($"SpawnPoint {name} no puede generar enemigo: falta prefab o spline.");
+            return;
+        }
+
+        // Inicializar pool si no existe
+        if (!enemyPools.ContainsKey(enemyPrefab))
+        {
+            InitializePoolForPrefab(enemyPrefab);
+        }
+
+        GameObject enemy = GetEnemyFromPool(enemyPrefab);
+
+        // IMPORTANTE: Desactivar primero para resetear posición
+        enemy.SetActive(false);
+        
+        // Posicionar enemigo SIN parent
+        enemy.transform.SetParent(null);
+        enemy.transform.position = transform.position;
+        enemy.transform.rotation = transform.rotation;
+
+        // Configurar pathfinding ANTES de activar
+        var pathAgent = enemy.GetComponent<FollowPathAgent>();
+        if (pathAgent != null)
+        {
+            pathAgent.enabled = false; // Desactivar primero
+            pathAgent.AssignSplineContainer(associatedSpline);
+            pathAgent.ResetProgress(keepWorldPosition: false); // FALSE es clave
+            pathAgent.enabled = true; // Reactivar después
+        }
+
+        // Configurar referencia al spawner
+        var enemyComponent = enemy.GetComponent<Enemy>();
+        if (enemyComponent != null)
+        {
+            enemyComponent.Initialize(this);
+        }
+
+        // Resetear salud
+        var health = enemy.GetComponent<Health>();
+        if (health != null)
+        {
+            health.ResetHealth();
+        }
+
+        // Activar AL FINAL
         enemy.SetActive(true);
     }
 

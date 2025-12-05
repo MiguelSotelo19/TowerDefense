@@ -11,12 +11,14 @@ public class CoreHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+        EventManager.Invoke(GlobalEvents.CoreHealthUpdated, currentHealth);
     }
 
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        Debug.Log($"Core dañado! Vida: {currentHealth}/{maxHealth}");
+        EventManager.Invoke(GlobalEvents.CoreHealthUpdated,currentHealth);  
+        Debug.Log($"Core daï¿½ado! Vida: {currentHealth}/{maxHealth}");
 
         if (currentHealth <= 0)
         {
@@ -26,8 +28,12 @@ public class CoreHealth : MonoBehaviour
 
     void GameOver()
     {
-        Debug.Log("GAME OVER - El núcleo ha sido destruido");
-        // Aquí llamarás al GameManager más adelante
+        Debug.Log("GAME OVER - El nï¿½cleo ha sido destruido");
+        // Aquï¿½ llamarï¿½s al GameManager mï¿½s adelante
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnDefeat();
+        }
     }
 
     void OnDrawGizmos()
@@ -39,15 +45,33 @@ public class CoreHealth : MonoBehaviour
         Gizmos.DrawLine(transform.position + Vector3.forward * coreSize, transform.position + Vector3.back * coreSize);
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+        if (enemy != null)
+        {
+            TakeDamage(enemy.DamageToCore);
+            enemy.ReachCore();
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"Core colisionÃ³ con: {other.name}, Layer: {LayerMask.LayerToName(other.gameObject.layer)}");
+        
         if (other.gameObject.layer == LayerMask.NameToLayer("Hurtbox"))
         {
+            Debug.Log("Es layer Hurtbox!");
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null)
             {
+                Debug.Log($"Enemigo encontrado: {enemy.name}, llamando TakeDamage y ReachCore");
                 TakeDamage(enemy.DamageToCore);
                 enemy.ReachCore();
+            }
+            else
+            {
+                Debug.LogWarning("No se encontrÃ³ componente Enemy!");
             }
         }
     }

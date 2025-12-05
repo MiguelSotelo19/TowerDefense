@@ -68,13 +68,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83628a8d91503f746902e69dfb09aaf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower
+  towerName: Torre
+  currentLevel: 1
+  maxLevel: 3
   range: 5
-  enemyTag: Enemy
+  fireRate: 0.3
+  maxTargets: 1
+  damage: 10
+  baseCost: 100
+  upgradeCosts: 96000000fa000000
   bulletPrefab: {fileID: 1234885817971972489, guid: 232134b26f2b6ae48b22c090182b8212, type: 3}
   firePoint: {fileID: 2789923330652923354, guid: 948b84db623df844ea1cc7ee7e58e629, type: 3}
   bulletPool: {fileID: 2789923330652923354, guid: 948b84db623df844ea1cc7ee7e58e629, type: 3}
   rangeDisplay: {fileID: 1105219568423217618, guid: 948b84db623df844ea1cc7ee7e58e629, type: 3}
   shootSound: {fileID: 2414496733422226712}
+  levelMaterials: []
+  levelModels: []
 --- !u!82 &2414496733422226712
 AudioSource:
   m_ObjectHideFlags: 0

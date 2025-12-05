@@ -67,14 +67,14 @@ public class Enemy : MonoBehaviour
         }
     }
 
-   private void HandleHealthChange(float current, float max)
-{
+    private void HandleHealthChange(float current, float max)
+    {
     if (current > 0 && animator != null)
         animator.SetTrigger("Hit");
 
     if (healthBar != null)
         healthBar.SetHealth(current, max);
-}
+    }
 
 
     public void ReachCore()
@@ -93,7 +93,9 @@ public class Enemy : MonoBehaviour
             return;
 
         if (EventManager.Instance != null)
-            EventManager.Invoke(GlobalEvents.EnemyDied, transform);
+            //TEMPORAL - Migue
+            //EventManager.Invoke(GlobalEvents.EnemyDied, transform);
+            EventManager.Invoke<Enemy>(GlobalEvents.EnemyDied, this);
 
         if (followPathAgent != null)
             followPathAgent.enabled = false;
@@ -104,7 +106,16 @@ public class Enemy : MonoBehaviour
         if (animator != null)
             animator.SetBool("IsDead", true);
 
-        StartCoroutine(WaitAndReturnToPool(deathAnimationDuration));
+        //TEMPORAL - Migue
+        //StartCoroutine(WaitAndReturnToPool(deathAnimationDuration));
+        if (gameObject.activeInHierarchy)
+        {
+            StartCoroutine(WaitAndReturnToPool(deathAnimationDuration));
+        }
+        else
+        {
+            ReturnToPoolOrDisable();
+        }
     }
 
     private IEnumerator WaitAndReturnToPool(float delay)

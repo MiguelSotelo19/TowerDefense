@@ -1,202 +1,185 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using TMPro;
 
-public class UpgradeMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class UpgradeMenuOption : MonoBehaviour
 {
-    [Header("Option Type")]
-    public OptionType optionType = OptionType.Upgrade;
-    
-    [Header("Visual Feedback")]
-    public float hoverScale = 1.2f;
-    public float scaleSpeed = 10f;
-    public Color hoverColor = new Color(1f, 1f, 1f, 1f);
-    public Color disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-    
+    [Header("Upgrade Type")]
+    public UpgradeType upgradeType = UpgradeType.Upgrade;
+
     [Header("UI References")]
     public TextMeshProUGUI costText;
-    public Image iconImage;
-    
-    private Vector3 originalScale;
-    private Color originalColor;
-    private Image image;
-    private Vector3 targetScale;
-    private Color targetColor;
+    public Button button;
+
     private Tower currentTower;
-    private bool isInteractable = true;
 
-    public enum OptionType
+    private void Awake()
     {
-        Upgrade,
-        Sell,
-        Info
+        if (button == null)
+            button = GetComponent<Button>();
+
+        if (button != null)
+            button.onClick.AddListener(OnClick);
     }
 
-    private void Start()
-    {
-        originalScale = transform.localScale;
-        targetScale = originalScale;
-        
-        image = GetComponent<Image>();
-        if (image != null)
-        {
-            originalColor = image.color;
-            targetColor = originalColor;
-        }
-    }
-
-    private void Update()
-    {
-        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * scaleSpeed);
-        
-        if (image != null)
-        {
-            image.color = Color.Lerp(image.color, targetColor, Time.deltaTime * scaleSpeed);
-        }
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (!isInteractable) return;
-        
-        targetScale = originalScale * hoverScale;
-        targetColor = hoverColor;
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        targetScale = originalScale;
-        targetColor = isInteractable ? originalColor : disabledColor;
-    }
-    
     public void SetTower(Tower tower)
     {
         currentTower = tower;
+        CreateCostTextIfMissing();
         UpdateUI();
     }
-    
+
+
     private void UpdateUI()
     {
         if (currentTower == null) return;
-        
-        switch (optionType)
-        {
-            case OptionType.Upgrade:
-                UpdateUpgradeUI();
-                break;
-                
-            case OptionType.Sell:
-                UpdateSellUI();
-                break;
-                
-            case OptionType.Info:
-                UpdateInfoUI();
-                break;
-        }
+
+        if (upgradeType == UpgradeType.Upgrade)
+            UpdateUpgradeButton();
+        else
+            UpdateSellButton();
     }
-    
-    private void UpdateUpgradeUI()
+
+    private void UpdateUpgradeButton()
     {
         bool canUpgrade = currentTower.CanUpgrade();
-        isInteractable = canUpgrade;
-        
+
+        if (button != null)
+            button.interactable = canUpgrade;
+
         if (costText != null)
         {
             if (canUpgrade)
             {
                 int cost = currentTower.GetUpgradeCost();
-                bool hasEnoughMoney = EconomyManager.Instance != null && 
-                                     EconomyManager.Instance.GetBytes() >= cost;
-                
-                costText.text = $"{cost}";
-                costText.color = hasEnoughMoney ? Color.white : Color.red;
-                isInteractable = hasEnoughMoney;
+                string towerName = currentTower.towerName;
+
+                costText.text = $"Mejorar — {cost} bytes";
+
+                if (EconomyManager.Instance != null)
+                {
+                    bool canAfford = EconomyManager.Instance.GetBytes() >= cost;
+                    costText.color = canAfford ? Color.white : Color.red;
+                }
             }
             else
             {
-                costText.text = "MAX";
+                costText.text = $"{currentTower.towerName} (MAX)";
                 costText.color = Color.yellow;
             }
         }
-        
-        if (image != null)
-        {
-            targetColor = isInteractable ? originalColor : disabledColor;
-        }
-    }
-    
-    private void UpdateSellUI()
-    {
-        isInteractable = true;
-        
-        if (costText != null)
-        {
-            int sellValue = Mathf.RoundToInt(currentTower.baseCost * 0.5f);
-            costText.text = $"+{sellValue}";
-            costText.color = Color.green;
-        }
-    }
-    
-    private void UpdateInfoUI()
-    {
-        isInteractable = true;
-        
-        if (costText != null)
-        {
-            costText.text = $"Lv.{currentTower.currentLevel}";
-        }
     }
 
-    public void OnClick()
+    private void UpdateSellButton()
     {
-        if (!isInteractable || currentTower == null) return;
-        
-        switch (optionType)
+        int sellValue = CalculateSellValue();
+
+        if (costText != null)
         {
-            case OptionType.Upgrade:
-                UpgradeTower();
-                break;
-                
-            case OptionType.Sell:
-                SellTower();
-                break;
-                
-            case OptionType.Info:
-                ShowInfo();
-                break;
+            costText.text = $"Vender — +{sellValue} bytes";
+            costText.color = Color.white;
         }
+
+        if (button != null)
+            button.interactable = true;
     }
-    
-    private void UpgradeTower()
+
+    private void OnClick()
     {
-        if (currentTower.CanUpgrade())
+        if (currentTower == null) return;
+
+        if (upgradeType == UpgradeType.Upgrade)
+            TryUpgrade();
+        else
+            TrySell();
+    }
+
+    private void TryUpgrade()
+    {
+        if (!currentTower.CanUpgrade())
+        {
+            Debug.LogWarning("Torre ya está al nivel máximo");
+            return;
+        }
+
+        int cost = currentTower.GetUpgradeCost();
+
+        if (EconomyManager.Instance != null)
+        {
+            if (EconomyManager.Instance.GetBytes() < cost)
+            {
+                Debug.LogWarning("No tienes suficientes bytes para mejorar");
+                return;
+            }
+
+            if (EconomyManager.Instance.SpendBytes(cost))
+            {
+                currentTower.Upgrade();
+                UpdateUI();
+
+                if (!currentTower.CanUpgrade())
+                    WheelMenuController.Instance.HideMenu();
+            }
+        }
+        else
         {
             currentTower.Upgrade();
             UpdateUI();
         }
     }
-    
-    private void SellTower()
+
+    private void TrySell()
     {
+        int sellValue = CalculateSellValue();
+
+        if (EconomyManager.Instance != null)
+            EconomyManager.Instance.AddBytes(sellValue);
+
         if (TowerSpotWD.SelectedSpot != null)
-        {
-            int sellValue = Mathf.RoundToInt(currentTower.baseCost * 0.5f);
-            if (EconomyManager.Instance != null)
-            {
-                EconomyManager.Instance.AddBytes(sellValue);
-            }
-            
             TowerSpotWD.SelectedSpot.RemoveTower();
-            WheelMenuController.Instance.HideMenu();
-        }
-    }
-    
-    private void ShowInfo()
-    {
-        Debug.Log(currentTower.GetTowerInfo());
-        
-        // Cerrar menú después de mostrar info
+
         WheelMenuController.Instance.HideMenu();
     }
+
+    private int CalculateSellValue()
+    {
+        if (currentTower == null) return 0;
+
+        int total = currentTower.baseCost;
+
+        for (int i = 0; i < currentTower.currentLevel - 1; i++)
+        {
+            if (i < currentTower.upgradeCosts.Length)
+                total += currentTower.upgradeCosts[i];
+        }
+
+        return Mathf.RoundToInt(total * 0.5f);
+    }
+    private void CreateCostTextIfMissing()
+    {
+        if (costText != null) return;
+
+        GameObject textGO = new GameObject("UpgradeCostText");
+        textGO.transform.SetParent(transform, false);
+
+        RectTransform rect = textGO.AddComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        costText = textGO.AddComponent<TextMeshProUGUI>();
+        costText.alignment = TextAlignmentOptions.Center;
+        costText.enableAutoSizing = true;
+        costText.fontSizeMin = 14;
+        costText.fontSizeMax = 28;
+        costText.color = Color.white;
+    }
+
+}
+
+public enum UpgradeType
+{
+    Upgrade,
+    Sell
 }

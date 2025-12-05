@@ -11,5 +11,10 @@ public enum GlobalEvents
     WaveStarted,
     WaveCompleted,
     AllWavesCompleted,
-    EnemyReachedCore
+    EnemyReachedCore,
+    
+    //FOR HUD
+    CoreHealthUpdated,
+    OleadasUpdated,
+    BytesUpdated,  
 }
