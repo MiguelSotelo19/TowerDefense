@@ -62,7 +62,7 @@ public class FollowPathAgent : MonoBehaviour
                 // ← CAMBIO AQUÍ ←
                 // Obtener posición local del spline
                 Vector3 localPosition = _currentPath.EvaluatePosition(0f);
-                
+
                 // Convertir a posición mundial usando el transform del SplineContainer
                 if (splineContainer != null)
                 {
@@ -80,6 +80,52 @@ public class FollowPathAgent : MonoBehaviour
 
         if (_rb != null)
             _rb.linearVelocity = Vector3.zero;
+    }
+    // Permite configurar el progreso normalizado sin usar reflection
+    public void SetProgress(float t)
+    {
+        _t = Mathf.Clamp01(t);
+    }
+
+    // Devuelve la posición en mundo del spline para un progreso dado
+    public Vector3 GetWorldPositionAtProgress(float t)
+    {
+        if (_currentPath == null || splineContainer == null)
+            return transform.position;
+
+        t = Mathf.Clamp01(t);
+        Vector3 localPos = _currentPath.EvaluatePosition(t);
+        return splineContainer.transform.TransformPoint(localPos);
+    }
+
+    // Devuelve la rotación (mundo) alineada con la tangente en el progreso t
+    public Quaternion GetWorldRotationAtProgress(float t)
+    {
+        if (_currentPath == null || splineContainer == null)
+            return transform.rotation;
+
+        t = Mathf.Clamp01(t);
+        Vector3 tangent = _currentPath.EvaluateTangent(t); // tangente en espacio local del spline
+        Vector3 worldTangent = splineContainer.transform.TransformDirection(tangent);
+        if (worldTangent.sqrMagnitude <= 0.0001f) return transform.rotation;
+        return Quaternion.LookRotation(worldTangent);
+    }
+
+    // Método comodín que restaura posición + rotación + progreso en un solo llamado
+    public void RestoreProgressAndSnap(float t)
+    {
+        SetProgress(t);
+
+        if (_currentPath == null || splineContainer == null) return;
+
+        Vector3 worldPos = GetWorldPositionAtProgress(t);
+        Quaternion worldRot = GetWorldRotationAtProgress(t);
+
+        // Pone al agente en la posición exacta del spline y alinea rotación
+        transform.position = worldPos;
+        transform.rotation = worldRot;
+
+        if (_rb != null) _rb.linearVelocity = Vector3.zero;
     }
 
 }

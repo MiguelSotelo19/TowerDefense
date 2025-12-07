@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
             followPathAgent.enabled = true;
     }
 
-    private void OnDisable()
+    protected void OnDisable()
     {
         if (enemyHealth != null)
         {
@@ -62,7 +62,6 @@ public class Enemy : MonoBehaviour
     {
         if (other.CompareTag("Core"))
         {
-            Debug.Log("Llego a core");
             ReachCore();
         }
     }

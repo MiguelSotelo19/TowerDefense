@@ -19,8 +19,6 @@ public class Health : MonoBehaviour
     {
         currentHealth = Mathf.Max(currentHealth - damage, 0);
         onHealthChange?.Invoke(currentHealth, maxHealth);
-        Debug.Log($"Current health: {currentHealth}");
-
         if (currentHealth == 0)
             onDeath?.Invoke();
     }
