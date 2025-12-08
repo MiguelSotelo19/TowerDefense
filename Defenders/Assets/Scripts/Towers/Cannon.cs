@@ -1,56 +1,44 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-/// <summary>
-/// Torre Cañón - Dispara más lento pero hace más daño.
-/// Nivel 3 hace daño en área (si configuras las balas para explotar).
-/// </summary>
 public class Cannon : Tower
 {
     [Header("Cannon Specific")]
-    public float explosionRadius = 0f; // Solo para nivel 3
+    public float explosionRadius = 0f;
 
     protected override void Awake()
     {
-        // Configurar solo valores que NO quieres cambiar en el Inspector
         towerName = "Cañón de datos";
         maxLevel = 3;
-
-        // Costos
         baseCost = 150;
         upgradeCosts = new int[] { 200, 350 };
 
-        // Los stats (range, fireRate, etc.) ahora se configuran en el Inspector
-        // o los deja con los valores por defecto de Tower.cs
-
-        // Llamar al Awake de Tower
         base.Awake();
     }
 
     protected override void ApplyLevelStats()
     {
-        // Aquí defines qué cambia en cada nivel
         switch (currentLevel)
         {
-            case 1: // Cañón de datos (básico)
+            case 1: // Cañón de datos
                 fireRate = 1.5f;
                 maxTargets = 1;
                 damage = 50;
                 explosionRadius = 0f;
                 break;
 
-            case 2: // Cañón Binario (ataca a 2, menos daño c/u)
+            case 2: // Cañón Binario
                 fireRate = 1.2f;
-                maxTargets = 2; // Puede atacar a 2 enemigos
-                damage = 40; // 80% del daño original (50 * 0.8)
+                maxTargets = 2; //aTaca a 2
+                damage = 40; 
                 explosionRadius = 0f;
                 break;
 
-            case 3: // Cañón Comprimido (explota en área)
+            case 3: // Cañón Comprimido
                 fireRate = 1.0f;
                 maxTargets = 1;
                 damage = 60;
-                explosionRadius = 4f; // Radio de explosión
+                explosionRadius = 2f;
                 break;
         }
     }
@@ -66,7 +54,7 @@ public class Cannon : Tower
         available.transform.position = firePoint.transform.position;
         available.SetDamage(damage);
         available.SetExplosionRadius(explosionRadius);
-        available.SetFollowTarget(false, null); // o true si quieres que persiga
+        available.SetFollowTarget(false, null);
         available.gameObject.SetActive(true);
 
 
@@ -111,10 +99,8 @@ public class Cannon : Tower
 
     protected override void OnDrawGizmosSelected()
     {
-        // Dibujar rango normal
         base.OnDrawGizmosSelected();
 
-        // Si tiene explosión y hay un objetivo, mostrar el radio
         if (explosionRadius > 0 && PrimaryTarget != null)
         {
             Gizmos.color = Color.yellow;

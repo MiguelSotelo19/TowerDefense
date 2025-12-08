@@ -26,28 +26,24 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private Vector3 targetScale;
     private Color targetColor;
     private bool canAfford = true;
-    private int actualCost; // ← ESTA ES LA VARIABLE QUE FALTABA
+    private int actualCost;
 
     private void Awake()
     {
-        // Si no hay costo manual, leer del prefab
         if (towerCost == 0 && towerPrefab != null)
         {
             Tower towerComponent = towerPrefab.GetComponent<Tower>();
             if (towerComponent != null)
             {
                 actualCost = towerComponent.baseCost;
-                Debug.Log($"✅ Precio leído del prefab '{towerPrefab.name}': {actualCost} bytes");
             }
             else
             {
-                Debug.LogError($"❌ El prefab {towerPrefab.name} no tiene componente Tower!");
                 actualCost = 100; // Fallback
             }
         }
         else
         {
-            // Usar el costo manual
             actualCost = towerCost;
         }
     }
@@ -65,7 +61,6 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
             targetColor = originalColor;
         }
 
-        // Si NO hay objeto de texto asignado, crearlo automáticamente
         if (costText == null)
         {
             CreateCostTextObject();
@@ -84,7 +79,6 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
             image.color = Color.Lerp(image.color, targetColor, Time.deltaTime * scaleSpeed);
         }
 
-        // Verificar si se puede pagar
         UpdateAffordability();
     }
 
@@ -142,19 +136,19 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         if (TowerSpotWD.SelectedSpot == null)
         {
-            Debug.LogWarning("⚠️ No hay spot seleccionado!");
+            Debug.LogWarning("No hay spot seleccionado");
             return;
         }
 
         if (TowerSpotWD.SelectedSpot.IsOccupied())
         {
-            Debug.LogWarning("⚠️ Ya hay una torre en este spot!");
+            Debug.LogWarning("Ya hay una torre en este spot");
             return;
         }
 
         if (towerPrefab == null)
         {
-            Debug.LogError("❌ No hay prefab asignado a este botón!");
+            Debug.LogError("No hay prefab asignado a este botón");
             return;
         }
 
@@ -163,21 +157,21 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             if (!EconomyManager.Instance.CanAfford(actualCost))
             {
-                Debug.LogWarning($"❌ No tienes suficientes bytes! Necesitas {actualCost}, tienes {EconomyManager.Instance.GetBytes()}");
+                Debug.LogWarning($"No tienes suficientes bytes");
                 return;
             }
 
             if (!EconomyManager.Instance.SpendBytes(actualCost))
             {
-                Debug.LogError("❌ Error al gastar bytes!");
+                Debug.LogError("Error al gastar bytes!");
                 return;
             }
 
-            Debug.Log($"✅ Gastados {actualCost} bytes. Quedan {EconomyManager.Instance.GetBytes()}");
+            Debug.Log($"Gastados {actualCost} bytes");
         }
         else
         {
-            Debug.LogWarning("⚠️ No hay EconomyManager! La torre se construirá gratis.");
+            Debug.LogWarning("No hay EconomyManager");
         }
 
         // Construir torre
@@ -191,11 +185,11 @@ public class WheelMenuOption : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (tower != null)
         {
             TowerSpotWD.SelectedSpot.SetTower(tower);
-            Debug.Log($"🏗️ Torre '{tower.towerName}' construida en el spot");
+            Debug.Log($"Torre '{tower.towerName}' construida en el spot");
         }
         else
         {
-            Debug.LogError("❌ El prefab no tiene el componente Tower!");
+            Debug.LogError("El prefab no tiene el componente Tower");
             Destroy(towerGO);
 
             if (EconomyManager.Instance != null)
