@@ -3216,6 +3216,69 @@ Transform:
   - {fileID: 1306416107}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &527826238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 527826239}
+  - component: {fileID: 527826240}
+  m_Layer: 0
+  m_Name: FirewallPowerUpManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &527826239
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527826238}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.46818, y: 1.07731, z: -2.96983}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &527826240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527826238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0099777a0378644d9769f96e253c2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FirewallPowerUp
+  firewallDuration: 8
+  firewallSize: {x: 4, y: 2, z: 0.5}
+  firewallHealth: 100
+  isDestructible: 0
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  useMousePlacement: 1
+  fixedPosition: {x: 0, y: 0, z: 0}
+  allowRotation: 1
+  firewallPrefab: {fileID: 0}
+  firewallColor: {r: 1, g: 0.3, b: 0, a: 0.6}
+  firewallMaterial: {fileID: 0}
+  damageEnemiesOnContact: 0
+  contactDamage: 5
+  damageInterval: 0.5
+  deploySound: {fileID: 0}
+  impactSound: {fileID: 0}
+  cooldownTime: 15
 --- !u!1 &570475332
 GameObject:
   m_ObjectHideFlags: 0
@@ -3342,6 +3405,117 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 570475332}
   m_CullTransparentMesh: 1
+--- !u!1 &600116032
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 600116036}
+  - component: {fileID: 600116035}
+  - component: {fileID: 600116034}
+  - component: {fileID: 600116033}
+  m_Layer: 7
+  m_Name: Map
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &600116033
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600116032}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &600116034
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600116032}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &600116035
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600116032}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &600116036
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600116032}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.6, z: 0}
+  m_LocalScale: {x: 20, y: 0.1, z: 20}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &614169485
 GameObject:
   m_ObjectHideFlags: 0
@@ -3576,7 +3750,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 416.5, y: 453}
+  m_AnchoredPosition: {x: 285, y: 455}
   m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &654805299
@@ -3771,7 +3945,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 416.50256, y: 75.000015}
+  m_AnchoredPosition: {x: 285, y: 75}
   m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &690328811
@@ -8083,6 +8257,7 @@ GameObject:
   - component: {fileID: 1537656777}
   - component: {fileID: 1537656776}
   - component: {fileID: 1537656775}
+  - component: {fileID: 1537656778}
   m_Layer: 5
   m_Name: ButtonHabilityTwo
   m_TagString: Untagged
@@ -8192,6 +8367,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1537656773}
   m_CullTransparentMesh: 1
+--- !u!114 &1537656778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1537656773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b1caed76c6676b439137eaec6e42481, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FirewallButton
+  firewallPowerUp: {fileID: 527826240}
+  firewallButton: {fileID: 1537656775}
+  buttonImage: {fileID: 1011634335}
+  cooldownOverlay: {fileID: 0}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  cooldownColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  placingColor: {r: 1, g: 0.5, b: 0, a: 1}
+  cooldownText: {fileID: 0}
+  instructionText: {fileID: 0}
+  normalText: Firewall de Emergencia
+  placingText: Clic=Colocar | Scroll=Rotar | Derecho=Cancelar
 --- !u!1001 &1540771917
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8433,7 +8631,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 416.5, y: 265}
+  m_AnchoredPosition: {x: 285, y: 267}
   m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1582808063
@@ -11083,6 +11281,7 @@ GameObject:
   - component: {fileID: 2086895056}
   - component: {fileID: 2086895055}
   - component: {fileID: 2086895054}
+  - component: {fileID: 2086895057}
   m_Layer: 5
   m_Name: ButtonHabilityThree
   m_TagString: Untagged
@@ -11192,6 +11391,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2086895052}
   m_CullTransparentMesh: 1
+--- !u!114 &2086895057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2086895052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef4dc01f00437c2419b0b2c62170ffab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScanButton
+  scanPowerUp: {fileID: 2142577390}
+  scanButton: {fileID: 2086895054}
+  buttonImage: {fileID: 1651507509}
+  cooldownOverlay: {fileID: 0}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  cooldownColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  placingColor: {r: 1, g: 1, b: 0, a: 1}
+  cooldownText: {fileID: 0}
+  instructionText: {fileID: 0}
+  normalText: "Escaneo R\xE1pido"
+  placingText: Clic para colocar (Derecho=Cancelar)
 --- !u!1 &2122866398
 GameObject:
   m_ObjectHideFlags: 0
@@ -11466,6 +11688,65 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2138325372}
   m_CullTransparentMesh: 1
+--- !u!1 &2142577388
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2142577389}
+  - component: {fileID: 2142577390}
+  m_Layer: 0
+  m_Name: ScanPowerUpManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2142577389
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142577388}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.46818, y: 1.07731, z: -2.96983}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2142577390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142577388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0cb7113aa4734d4f9b171fcf726e095, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScanPowerUp
+  scanRadius: 5
+  scanDuration: 4
+  damagePerSecond: 10
+  damageTickRate: 0.5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  useMousePlacement: 1
+  fixedPosition: {x: 0, y: 0, z: 0}
+  scanAreaPrefab: {fileID: 1579497006175254714, guid: b2ad3c95953389e418a7cb8ff26e693b, type: 3}
+  scanColor: {r: 0, g: 1, b: 0, a: 0.3}
+  scanMaterial: {fileID: 2100000, guid: c0752c23d41d7554e9940d9394c9486a, type: 2}
+  scanSound: {fileID: 0}
+  damageTickSound: {fileID: 0}
+  cooldownTime: 12
 --- !u!1001 &5629986132992668311
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11672,3 +11953,6 @@ SceneRoots:
   - {fileID: 424002735}
   - {fileID: 1261575151}
   - {fileID: 787250895}
+  - {fileID: 2142577389}
+  - {fileID: 527826239}
+  - {fileID: 600116036}
