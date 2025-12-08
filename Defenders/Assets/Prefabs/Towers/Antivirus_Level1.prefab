@@ -829,7 +829,7 @@ GameObject:
   m_Layer: 0
   m_Name: TowerRoot
   m_TagString: Untagged
-  m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1650,9 +1650,9 @@ MonoBehaviour:
   range: 5
   fireRate: 0.5
   maxTargets: 1
-  damage: 7
+  damage: 25
   baseCost: 100
-  upgradeCosts: 96000000fa000000
+  upgradeCosts: 96000000c8000000
   bulletPrefab: {fileID: 1234885817971972489, guid: 232134b26f2b6ae48b22c090182b8212, type: 3}
   firePoint: {fileID: 2789923330652923354}
   bulletPool: {fileID: 2789923330652923354}

@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/// <summary>
-/// Clase base simple para todas las torres.
-/// Tiene la funcionalidad común: disparar, detectar enemigos, mejorar.
-/// </summary>
 public class Tower : MonoBehaviour
 {
     [Header("Tower Info")]
@@ -15,7 +11,7 @@ public class Tower : MonoBehaviour
     public int maxLevel = 3;
 
     [Header("Combat Stats")]
-    public float range = 5f; // ← Cambiado a 5 como querías
+    public float range = 5f;
     public float fireRate = 0.5f;
     public int maxTargets = 1;
     public int damage = 25;
@@ -35,16 +31,14 @@ public class Tower : MonoBehaviour
     [SerializeField] protected Material[] levelMaterials;
     protected MeshRenderer meshRenderer;
 
-    // Sistema interno
+
     protected List<Bullet> bullets = new List<Bullet>();
     protected List<Transform> targets = new List<Transform>();
     protected TowerStateMachine stateMachine;
 
-    // Propiedades públicas para acceder a los targets
     public Transform PrimaryTarget => targets.Count > 0 ? targets[0] : null;
-    public List<Transform> Targets => targets; // ← ESTO FALTABA
+    public List<Transform> Targets => targets; 
 
-    // ========== UNITY LIFECYCLE ==========
 
     protected virtual void Awake()
     {
@@ -74,8 +68,6 @@ public class Tower : MonoBehaviour
         stateMachine?.Update();
     }
 
-    // ========== INICIALIZACIÓN ==========
-
     private void InitializeBullets()
     {
         if (bulletPrefab == null || bulletPool == null) return;
@@ -89,8 +81,6 @@ public class Tower : MonoBehaviour
         }
     }
 
-    // ========== SISTEMA DE DISPARO ==========
-
     public virtual IEnumerator FireRoutine()
     {
         while (targets.Count > 0)
@@ -102,7 +92,6 @@ public class Tower : MonoBehaviour
 
     protected virtual void FireAtTargets()
     {
-        // Dispara a los primeros N enemigos según maxTargets
         int targetsToFire = Mathf.Min(targets.Count, maxTargets);
 
         for (int i = 0; i < targetsToFire; i++)
@@ -119,18 +108,15 @@ public class Tower : MonoBehaviour
 
         Vector3 direction = (target.position - firePoint.transform.position).normalized;
 
-        // Asignar propiedades a la bala desde la torre (importante)
         available.direction = direction;
         available.transform.position = firePoint.transform.position;
 
-        // Pasar stats que dependen de la torre (estimulación para que el prefab no domine)
         available.SetDamage(damage);
-        available.SetSpeed(available.speed); // opcional: si quieres escalar speed por torre, reemplaza available.speed por un valor calculado
-        available.SetMaxRange(available.maxRange); // si quieres cambiar maxRange desde la torre, pásalo aquí
-        available.SetPierce(false); // default; las torres que permiten pierce pueden sobrescribir en su FireBullet
-        available.SetExplosionRadius(0f); // base: sin explosión; Cannon sobrescribe
+        available.SetSpeed(available.speed); 
+        available.SetMaxRange(available.maxRange);
+        available.SetPierce(false); 
+        available.SetExplosionRadius(0f);
 
-        // Si quieres que la bala siga al objetivo por defecto comentalo:
         available.SetFollowTarget(false, null);
 
         available.gameObject.SetActive(true);
@@ -138,9 +124,6 @@ public class Tower : MonoBehaviour
         if (shootSound != null)
             shootSound.Play();
     }
-
-
-    // ========== DETECTAR ENEMIGOS ==========
 
     protected virtual void FindTargets()
     {
@@ -159,10 +142,8 @@ public class Tower : MonoBehaviour
             }
         }
 
-        // Ordenar por distancia
         enemiesInRange.Sort((a, b) => a.distance.CompareTo(b.distance));
 
-        // Tomar los más cercanos
         int count = Mathf.Min(enemiesInRange.Count, maxTargets);
         for (int i = 0; i < count; i++)
         {
@@ -180,8 +161,6 @@ public class Tower : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(0f, rotation.y, 0f);
     }
-
-    // ========== SISTEMA DE MEJORAS ==========
 
     public bool CanUpgrade()
     {
@@ -207,19 +186,16 @@ public class Tower : MonoBehaviour
         }
 
         currentLevel++;
-        ApplyLevelStats(); // Las torres específicas implementan esto
+        ApplyLevelStats();
         UpdateVisuals();
 
         Debug.Log($"{towerName} mejorada a nivel {currentLevel}!");
     }
 
-    // Este método lo sobrescribe cada torre para cambiar sus stats
     protected virtual void ApplyLevelStats()
     {
         // Las clases hijas definen qué pasa en cada nivel
     }
-
-    // ========== VISUALES ==========
 
     protected virtual void UpdateVisuals()
     {
@@ -239,8 +215,6 @@ public class Tower : MonoBehaviour
             rangeDisplay.transform.localScale = new Vector3(range / 5f, 1f, range / 5f);
         }
     }
-
-    // ========== INFORMACIÓN ==========
 
     public virtual string GetTowerInfo()
     {
@@ -263,8 +237,6 @@ public class Tower : MonoBehaviour
         return info;
     }
 
-    // ========== GIZMOS & MOUSE ==========
-
     protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
@@ -283,22 +255,19 @@ public class Tower : MonoBehaviour
             rangeDisplay.SetActive(false);
     }
 
-    // ========== CLICK HANDLING ==========
-
     protected virtual void OnMouseDown()
     {
-        // Ignorar si hacemos click sobre UI
+        // Ignorar clic
         if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
             return;
-
-        // Buscar el spot en el que está esta torre
+        
+        // Buscar spot torre
         TowerSpotWD parentSpot = GetComponentInParent<TowerSpotWD>();
         if (parentSpot == null)
         {
-            // Si la torre no es hija del spot, buscar el más cercano
             TowerSpotWD[] allSpots = FindObjectsByType<TowerSpotWD>(FindObjectsSortMode.None);
             float closestDistance = float.MaxValue;
-
+            
             foreach (var spot in allSpots)
             {
                 float distance = Vector3.Distance(transform.position, spot.transform.position);
@@ -309,21 +278,17 @@ public class Tower : MonoBehaviour
                 }
             }
         }
-
+        
         if (parentSpot != null)
         {
-            // Seleccionar el spot
             TowerSpotWD.SelectedSpot = parentSpot;
-
-            // Mostrar menú de upgrade
+            
             Vector3 mousePos = Input.mousePosition;
             WheelMenuController.Instance.ShowUpgradeMenu(mousePos, this);
-
-            Debug.Log($"🔧 Click en torre {towerName} - Mostrando menú de upgrade");
         }
         else
         {
-            Debug.LogWarning("⚠️ No se encontró TowerSpot para esta torre!");
+            Debug.LogWarning("No se encontró TowerSpot");
         }
     }
 }

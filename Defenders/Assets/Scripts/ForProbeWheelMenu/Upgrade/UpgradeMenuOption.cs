@@ -12,6 +12,7 @@ public class UpgradeMenuOption : MonoBehaviour
     public Button button;
 
     private Tower currentTower;
+    private bool isProcessing = false; 
 
     private void Awake()
     {
@@ -25,10 +26,10 @@ public class UpgradeMenuOption : MonoBehaviour
     public void SetTower(Tower tower)
     {
         currentTower = tower;
+        isProcessing = false;
         CreateCostTextIfMissing();
         UpdateUI();
     }
-
 
     private void UpdateUI()
     {
@@ -45,7 +46,7 @@ public class UpgradeMenuOption : MonoBehaviour
         bool canUpgrade = currentTower.CanUpgrade();
 
         if (button != null)
-            button.interactable = canUpgrade;
+            button.interactable = canUpgrade && !isProcessing;
 
         if (costText != null)
         {
@@ -81,11 +82,16 @@ public class UpgradeMenuOption : MonoBehaviour
         }
 
         if (button != null)
-            button.interactable = true;
+            button.interactable = !isProcessing; //Esta cosa es para que no hagan +1 accion por vez
     }
 
     private void OnClick()
     {
+        if (isProcessing)
+        {
+            return;
+        }
+
         if (currentTower == null) return;
 
         if (upgradeType == UpgradeType.Upgrade)
@@ -96,9 +102,11 @@ public class UpgradeMenuOption : MonoBehaviour
 
     private void TryUpgrade()
     {
+        isProcessing = true;
+
         if (!currentTower.CanUpgrade())
         {
-            Debug.LogWarning("Torre ya está al nivel máximo");
+            isProcessing = false;
             return;
         }
 
@@ -108,36 +116,56 @@ public class UpgradeMenuOption : MonoBehaviour
         {
             if (EconomyManager.Instance.GetBytes() < cost)
             {
-                Debug.LogWarning("No tienes suficientes bytes para mejorar");
+                isProcessing = false;
                 return;
             }
 
             if (EconomyManager.Instance.SpendBytes(cost))
             {
                 currentTower.Upgrade();
-                UpdateUI();
-
-                if (!currentTower.CanUpgrade())
-                    WheelMenuController.Instance.HideMenu();
+                WheelMenuController.Instance.HideMenu();
+            }
+            else
+            {
+                Debug.LogError("Error al gastar bytes");
+                isProcessing = false;
             }
         }
         else
         {
+            // Sin EconomyManager (modo debug)
             currentTower.Upgrade();
-            UpdateUI();
+            WheelMenuController.Instance.HideMenu();
         }
     }
 
     private void TrySell()
     {
+        isProcessing = true;
+
         int sellValue = CalculateSellValue();
 
         if (EconomyManager.Instance != null)
+        {
             EconomyManager.Instance.AddBytes(sellValue);
+        }
 
         if (TowerSpotWD.SelectedSpot != null)
+        {
             TowerSpotWD.SelectedSpot.RemoveTower();
+        }
+        else
+        {
+            Debug.LogError("No hay SelectedSpot! La torre no se puede eliminar correctamente");
 
+            // Fallback: destruir la torre manualmente si no hay spot
+            if (currentTower != null)
+            {
+                Destroy(currentTower.gameObject);
+            }
+        }
+
+        // Cerrar menú
         WheelMenuController.Instance.HideMenu();
     }
 
@@ -155,6 +183,7 @@ public class UpgradeMenuOption : MonoBehaviour
 
         return Mathf.RoundToInt(total * 0.5f);
     }
+
     private void CreateCostTextIfMissing()
     {
         if (costText != null) return;
@@ -175,7 +204,6 @@ public class UpgradeMenuOption : MonoBehaviour
         costText.fontSizeMax = 28;
         costText.color = Color.white;
     }
-
 }
 
 public enum UpgradeType

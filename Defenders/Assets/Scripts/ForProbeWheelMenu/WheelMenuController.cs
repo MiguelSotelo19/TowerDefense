@@ -35,10 +35,8 @@ public class WheelMenuController : MonoBehaviour
     {
         selectedTower = null;
         
-        // ← ACTIVAR WHEELMENU PRIMERO ←
         gameObject.SetActive(true);
         
-        // Luego cambiar los contenedores
         if (buildOptionsContainer != null)
             buildOptionsContainer.SetActive(true);
         if (upgradeOptionsContainer != null)
@@ -51,10 +49,8 @@ public class WheelMenuController : MonoBehaviour
     {
         selectedTower = tower;
         
-        // ← ACTIVAR WHEELMENU PRIMERO ←
         gameObject.SetActive(true);
         
-        // Luego cambiar los contenedores
         if (buildOptionsContainer != null)
             buildOptionsContainer.SetActive(false);
         if (upgradeOptionsContainer != null)
@@ -68,8 +64,7 @@ public class WheelMenuController : MonoBehaviour
     {
         rectTransform.position = screenPos;
         
-        // Ya no activamos aquí porque ya se activó antes
-        // gameObject.SetActive(true); ← QUITADO
+        // gameObject.SetActive(true);
         
         if (currentAnimation != null)
             StopCoroutine(currentAnimation);

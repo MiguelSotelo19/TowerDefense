@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class TowerSpotWD : MonoBehaviour
@@ -41,11 +41,16 @@ public class TowerSpotWD : MonoBehaviour
     }
     
     public void RemoveTower()
+{
+    if (currentTower != null)
     {
-        if (currentTower != null)
-        {
-            Destroy(currentTower.gameObject);
-            currentTower = null;
-        }
+        Debug.Log($"Eliminando torre del spot");
+        Destroy(currentTower.gameObject);
+        currentTower = null;
     }
+    else
+    {
+        Debug.LogWarning("No hay torre seleccionada");
+    }
+}
 }

@@ -15,5 +15,3 @@ public class WheelMenuRotation : MonoBehaviour
         transform.Rotate(0, 0, rotationSpeed * direction * Time.deltaTime);
     }
 }
-
-// Añade este script al contenedor de opciones si quieres rotación constante
