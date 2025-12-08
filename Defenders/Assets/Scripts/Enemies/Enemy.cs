@@ -20,6 +20,11 @@ public class Enemy : MonoBehaviour
     private Health enemyHealth;
     private FollowPathAgent followPathAgent;
     public int DamageToCore => damageToCore;
+    
+    // Variables para el congelamiento
+    private bool isFrozen = false;
+    private Renderer enemyRenderer;
+    private Color originalColor;
 
 
     private void Awake()
@@ -29,6 +34,10 @@ public class Enemy : MonoBehaviour
 
         enemyHealth = GetComponent<Health>();
         followPathAgent = GetComponent<FollowPathAgent>();
+        enemyRenderer = GetComponentInChildren<Renderer>();
+        
+        if (enemyRenderer != null)
+            originalColor = enemyRenderer.material.color;
     }
 
     private void OnEnable()
@@ -42,6 +51,8 @@ public class Enemy : MonoBehaviour
         }
         if (followPathAgent != null)
             followPathAgent.enabled = true;
+        
+        isFrozen = false;
     }
 
     protected void OnDisable()
@@ -153,4 +164,42 @@ public class Enemy : MonoBehaviour
         healthBar = bar;
     }
     
+    // ===== NUEVOS MÉTODOS PARA CONGELAMIENTO =====
+    
+    public void SetFrozen(bool frozen, Color freezeColor)
+    {
+        isFrozen = frozen;
+        
+        if (followPathAgent != null)
+        {
+            // Desactivar/activar el componente para detener completamente el movimiento
+            followPathAgent.enabled = !frozen;
+            
+            // Si se descongela, asegurarse de que el Rigidbody esté activo
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null && frozen)
+            {
+                rb.linearVelocity = Vector3.zero;
+            }
+        }
+        
+        // Pausar o reanudar el animator
+        if (animator != null)
+        {
+            animator.speed = frozen ? 0f : 1f;
+        }
+        
+        // Cambiar color visual
+        if (enemyRenderer != null)
+        {
+            enemyRenderer.material.color = frozen ? freezeColor : originalColor;
+        }
+        
+        Debug.Log($"Enemigo {gameObject.name} congelado: {frozen}");
+    }
+    
+    public bool IsFrozen()
+    {
+        return isFrozen;
+    }
 }
