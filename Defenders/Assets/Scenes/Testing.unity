@@ -1210,7 +1210,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &237769026
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1275,7 +1275,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 934819158}
+      - m_Target: {fileID: 237769030}
         m_TargetAssemblyTypeName: WheelMenuOption, Assembly-CSharp
         m_MethodName: BuildTower
         m_Mode: 1
@@ -1337,8 +1337,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f3829f32497d3748b95568d9669fc25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WheelMenuOption
-  towerPrefab: {fileID: 8237686440300084134, guid: 948b84db623df844ea1cc7ee7e58e629, type: 3}
-  towerCost: 100
+  towerPrefab: {fileID: 8588434042699085736, guid: b09179fc2c204344594be22d59216d89, type: 3}
+  towerCost: 0
   hoverScale: 1.2
   scaleSpeed: 10
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
@@ -8692,7 +8692,7 @@ MonoBehaviour:
     enemyCount: 5
     spawnInterval: 3
     delayBeforeWave: 3
-    enemyPrefab: {fileID: 1489946958114053646, guid: a46e51762e243354b9187b48f8ee51a5, type: 3}
+    enemyPrefab: {fileID: 6328747668958346445, guid: c2848cc960780f847a292db0ebf61687, type: 3}
   - waveNumber: 2
     enemyCount: 8
     spawnInterval: 1.5
@@ -10577,7 +10577,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: Algoritmo
 --- !u!222 &2027168405
 CanvasRenderer:
   m_ObjectHideFlags: 0

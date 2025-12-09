@@ -22,26 +22,29 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        Instance = this;
+    }
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     private void Start()
     {
         gameStartTime = Time.time;
-        
-        // Ocultar paneles al inicio
+        Time.timeScale = 1f;
+        void DebugCounts()
+        {
+            Debug.Log($"WaveManager count: {FindObjectsOfType<WaveManager>().Length}");
+            Debug.Log($"GameManager count: {FindObjectsOfType<GameManager>().Length}");
+            Debug.Log($"WaveManager Instance == null? {WaveManager.Instance == null}");
+            Debug.Log($"GameManager Instance == null? {GameManager.Instance == null}");
+        }
         if (victoryPanel != null) victoryPanel.SetActive(false);
         if (defeatPanel != null) defeatPanel.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(false);
-
+        DebugCounts();
     }
 
     private void OnEnable()
@@ -98,7 +101,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Métodos para botones de UI
     public void RestartGame()
     {
         Time.timeScale = 1f; // Reanudar tiempo
@@ -108,7 +110,6 @@ public class GameManager : MonoBehaviour
     public void ReturnToMenu()
     {
         Time.timeScale = 1f; // Reanudar tiempo
-        // Cambiar "MainMenu" por el nombre de tu escena de menú
         SceneManager.LoadScene("MainMenu");
     }
 
@@ -120,7 +121,6 @@ public class GameManager : MonoBehaviour
 
     public void TogglePause()
     {
-        // Evitar pausar después de victoria/derrota
         if (gameEnded) return;
 
         isPaused = !isPaused;
@@ -140,9 +140,6 @@ public class GameManager : MonoBehaviour
                 pausePanel.SetActive(false);
         }
     }
-
-
-    // Getters para las estadísticas
     public int GetEnemiesKilled() => enemiesKilled;
     public int GetWavesCompleted() => wavesCompleted;
     public float GetPlayTime() => Time.time - gameStartTime;

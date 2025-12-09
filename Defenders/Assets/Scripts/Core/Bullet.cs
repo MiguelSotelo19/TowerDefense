@@ -25,7 +25,6 @@ public class Bullet : MonoBehaviour
 
     private void OnEnable()
     {
-        // Reiniciar estado al activarse (pooling)
         startPosition = transform.position;
         isDespawning = false;
     }
@@ -47,7 +46,6 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Solo golpea hurtboxes
         if (other.gameObject.layer != LayerMask.NameToLayer("Hurtbox"))
             return;
 
@@ -58,10 +56,6 @@ public class Bullet : MonoBehaviour
         if (!canPierce)
             Despawn();
     }
-
-    // ---------------------------
-    // APLICACIÓN DEL DAÑO
-    // ---------------------------
     private void ApplyDamage(Collider col)
     {
         if (explosionRadius <= 0f)
@@ -70,7 +64,6 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        // Explosión: dañar todos los Hurtbox dentro del radio
         Collider[] hits = Physics.OverlapSphere(transform.position, explosionRadius);
 
         foreach (Collider c in hits)
@@ -82,15 +75,11 @@ public class Bullet : MonoBehaviour
 
     private void DealToEnemy(Collider col)
     {
-        // Usamos GetComponentInParent por si el Hurtbox está en un child
         Health health = col.GetComponentInParent<Health>();
         if (health != null)
             health.TakeDamage(damage);
     }
 
-    // ---------------------------
-    // DESPAWN SEGURO
-    // ---------------------------
     private void Despawn()
     {
         if (isDespawning)
@@ -99,7 +88,6 @@ public class Bullet : MonoBehaviour
         isDespawning = true;
         onRangeEnd?.Invoke();
 
-        // Desactivar al final del frame sin coroutine
         followTarget = false;
         target = null;
 
@@ -109,12 +97,10 @@ public class Bullet : MonoBehaviour
 
     private System.Collections.IEnumerator DelayedDisable()
     {
-        // Espera 0 frames para permitir ejecuciones posteriores si hay listeners.
         yield return null;
-        // Reset opcional: limpiar target/followTarget para evitar comportamientos residuales
         followTarget = false;
         target = null;
-        isDespawning = false; // permitir reuso correcto en el pool (se volverá a setear en OnEnable)
+        isDespawning = false; 
         gameObject.SetActive(false);
     }
 

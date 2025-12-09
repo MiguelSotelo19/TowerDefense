@@ -107,10 +107,8 @@ public class SpawnPoint : MonoBehaviour
         return enemy;
     }
 
-    // M�todo para retornar el enemigo al pool
     public void ReturnToPool(GameObject enemy)
     {
-        // Reset state
         var pathAgent = enemy.GetComponent<FollowPathAgent>();
         if (pathAgent != null)
         {
@@ -119,7 +117,6 @@ public class SpawnPoint : MonoBehaviour
 
         enemy.SetActive(false);
         enemyPool.Enqueue(enemy);
-        // Optionally parent it back to spawnpoint
         enemy.transform.SetParent(transform);
     }
 
@@ -165,61 +162,12 @@ public class SpawnPoint : MonoBehaviour
         }
         else
         {
-            // Si el pool está vacío, crear uno nuevo
             enemy = Instantiate(prefab);
             Debug.LogWarning($"Pool de {prefab.name} agotado, creando nueva instancia");
         }
 
         return enemy;
     }
-
-    // Método llamado por WaveManager para spawear enemigos
-    /*public void SpawnEnemyFromPool(GameObject enemyPrefab)
-    {
-        if (enemyPrefab == null || associatedSpline == null)
-        {
-            Debug.LogWarning($"SpawnPoint {name} no puede generar enemigo: falta prefab o spline.");
-            return;
-        }
-
-        // Inicializar pool si no existe
-        if (!enemyPools.ContainsKey(enemyPrefab))
-        {
-            InitializePoolForPrefab(enemyPrefab);
-        }
-
-        GameObject enemy = GetEnemyFromPool(enemyPrefab);
-
-        // Posicionar enemigo
-        enemy.transform.SetParent(null, true);
-        enemy.transform.position = transform.position;
-        enemy.transform.rotation = transform.rotation;
-
-        // Configurar pathfinding
-        var pathAgent = enemy.GetComponent<FollowPathAgent>();
-        if (pathAgent != null)
-        {
-            pathAgent.AssignSplineContainer(associatedSpline);
-            pathAgent.ResetProgress(keepWorldPosition: true);
-            pathAgent.enabled = true;
-        }
-
-        // Configurar referencia al spawner
-        var enemyComponent = enemy.GetComponent<Enemy>();
-        if (enemyComponent != null)
-        {
-            enemyComponent.Initialize(this);
-        }
-
-        // Resetear salud
-        var health = enemy.GetComponent<Health>();
-        if (health != null)
-        {
-            health.ResetHealth();
-        }
-
-        enemy.SetActive(true);
-    }*/
 
     public void SpawnEnemyFromPool(GameObject enemyPrefab)
     {
@@ -229,7 +177,6 @@ public class SpawnPoint : MonoBehaviour
             return;
         }
 
-        // Inicializar pool si no existe
         if (!enemyPools.ContainsKey(enemyPrefab))
         {
             InitializePoolForPrefab(enemyPrefab);
@@ -237,41 +184,34 @@ public class SpawnPoint : MonoBehaviour
 
         GameObject enemy = GetEnemyFromPool(enemyPrefab);
 
-        // IMPORTANTE: Desactivar primero para resetear posición
         enemy.SetActive(false);
         
-        // Posicionar enemigo SIN parent
         enemy.transform.SetParent(null);
         enemy.transform.position = transform.position;
         enemy.transform.rotation = transform.rotation;
 
-        // Configurar pathfinding ANTES de activar
         var pathAgent = enemy.GetComponent<FollowPathAgent>();
         if (pathAgent != null)
         {
-            pathAgent.enabled = false; // Desactivar primero
+            pathAgent.enabled = false; 
             pathAgent.AssignSplineContainer(associatedSpline);
-            pathAgent.ResetProgress(keepWorldPosition: false); // FALSE es clave
-            pathAgent.enabled = true; // Reactivar después
+            pathAgent.ResetProgress(keepWorldPosition: false);
+            pathAgent.enabled = true; 
         }
 
-        // Configurar referencia al spawner
         var enemyComponent = enemy.GetComponent<Enemy>();
         if (enemyComponent != null)
         {
             enemyComponent.Initialize(this);
         }
 
-        // Resetear salud
         var health = enemy.GetComponent<Health>();
         if (health != null)
         {
             health.ResetHealth();
         }
 
-        // Activar AL FINAL
         enemy.SetActive(true);
     }
-
-    
+   
 }

@@ -65,8 +65,8 @@ public class FollowPathAgent : MonoBehaviour
             isBlockedByObstacle = false;
             blockedTime = 0f;
         }
-
-        _t += Time.deltaTime * movementSpeed / _currentPath.GetLength();
+        
+        _t = (_t + Time.deltaTime * movementSpeed / _currentPath.GetLength()) % 1f;
         _tangent = _currentPath.EvaluateTangent(_t);
 
         var targetRotation = Quaternion.LookRotation(_tangent);
@@ -149,7 +149,7 @@ public class FollowPathAgent : MonoBehaviour
         else
             _currentPath = null;
 
-        _t = 0f;
+        _t = 0f; 
     }
 
     public void ResetProgress(bool keepWorldPosition = true)
@@ -161,9 +161,10 @@ public class FollowPathAgent : MonoBehaviour
             if (!keepWorldPosition)
             {
                 // Obtener posición local del spline
+                //Pasa de posicion local del spline
                 Vector3 localPosition = _currentPath.EvaluatePosition(0f);
 
-                // Convertir a posición mundial usando el transform del SplineContainer
+                //A posicion global
                 if (splineContainer != null)
                 {
                     transform.position = splineContainer.transform.TransformPoint(localPosition);
@@ -191,7 +192,6 @@ public class FollowPathAgent : MonoBehaviour
         _t = Mathf.Clamp01(t);
     }
 
-    // Devuelve la posición en mundo del spline para un progreso dado
     public Vector3 GetWorldPositionAtProgress(float t)
     {
         if (_currentPath == null || splineContainer == null)
@@ -202,7 +202,6 @@ public class FollowPathAgent : MonoBehaviour
         return splineContainer.transform.TransformPoint(localPos);
     }
 
-    // Devuelve la rotación (mundo) alineada con la tangente en el progreso t
     public Quaternion GetWorldRotationAtProgress(float t)
     {
         if (_currentPath == null || splineContainer == null)
@@ -215,7 +214,6 @@ public class FollowPathAgent : MonoBehaviour
         return Quaternion.LookRotation(worldTangent);
     }
 
-    // Método comodín que restaura posición + rotación + progreso en un solo llamado
     public void RestoreProgressAndSnap(float t)
     {
         SetProgress(t);

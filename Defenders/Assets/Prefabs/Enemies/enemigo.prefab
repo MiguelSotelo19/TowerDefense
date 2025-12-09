@@ -122,7 +122,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   deathAnimationDuration: 0.2
   damageToCore: 1
-  bytes: 20
+  bytes: 10
   ownerSpawner: {fileID: 0}
 --- !u!114 &1701451232314352410
 MonoBehaviour:
@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ffd5ba75fd81f34aa26371e2f5f29a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 20
+  maxHealth: 150
   currentHealth: 0
   onHealthChange:
     m_PersistentCalls:

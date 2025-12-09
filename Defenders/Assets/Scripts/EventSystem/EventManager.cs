@@ -11,20 +11,19 @@ public class EventManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
         foreach (var eventName in Enum.GetValues(typeof(GlobalEvents)))
         {
             Events.Add((GlobalEvents)eventName, new List<Delegate>());
         }
     }
-
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
     public static void Subscribe<T>(GlobalEvents globalEvent, Action<T> method)
     {
         if (Instance == null) return;
@@ -72,4 +71,16 @@ public class EventManager : MonoBehaviour
                 action.Invoke();
         }
     }
+    public static void ClearAll()
+    {
+        if (Events == null) return;
+
+        foreach (var key in Events.Keys)
+        {
+            Events[key].Clear();
+        }
+
+        Debug.Log("[EventManager] All events cleared.");
+    }
+
 }

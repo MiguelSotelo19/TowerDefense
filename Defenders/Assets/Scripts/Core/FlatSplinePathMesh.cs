@@ -6,6 +6,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Genera un mesh plano (como una carretera) a lo largo de un Spline.
 /// Soluciona el problema de las curvaturas verticales.
+/// Este si no le se, lo hizo chat 100%
 /// </summary>
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class FlatSplinePathMesh : MonoBehaviour
@@ -35,7 +36,7 @@ public class FlatSplinePathMesh : MonoBehaviour
     {
         if (splineContainer == null)
         {
-            Debug.LogError("❌ No hay SplineContainer asignado!");
+            Debug.LogError("No hay SplineContainer asignado!");
             return;
         }
 
@@ -112,7 +113,7 @@ public class FlatSplinePathMesh : MonoBehaviour
 
         meshFilter.mesh = mesh;
 
-        Debug.Log($"✅ Camino plano generado: {vertices.Count} vértices, {triangles.Count / 3} triángulos");
+        Debug.Log($"Camino plano generado: {vertices.Count} vértices, {triangles.Count / 3} triángulos");
     }
 
     // Regenerar cuando cambien valores en el editor
