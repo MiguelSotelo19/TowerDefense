@@ -197,6 +197,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FollowPathAgent
   movementSpeed: 5
   interpolationSpeed: 30
+  detectObstacles: 1
+  obstacleCheckDistance: 0.5
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  obstacleCheckRadius: 0.25
 --- !u!1001 &7629210063523083324
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -205,6 +211,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 672017041438699672}
     m_Modifications:
+    - target: {fileID: -9212325155238155829, guid: 64674f8a4e75c7f409ab70a806c7dc5f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -9212325155238155829, guid: 64674f8a4e75c7f409ab70a806c7dc5f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -9212325155238155829, guid: 64674f8a4e75c7f409ab70a806c7dc5f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 64674f8a4e75c7f409ab70a806c7dc5f, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.2
@@ -264,6 +282,18 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 64674f8a4e75c7f409ab70a806c7dc5f, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4731830127548267733, guid: 64674f8a4e75c7f409ab70a806c7dc5f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4731830127548267733, guid: 64674f8a4e75c7f409ab70a806c7dc5f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4731830127548267733, guid: 64674f8a4e75c7f409ab70a806c7dc5f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5820723806448146138, guid: 64674f8a4e75c7f409ab70a806c7dc5f, type: 3}
       propertyPath: m_LocalPosition.x

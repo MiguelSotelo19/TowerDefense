@@ -32,6 +32,7 @@ public class WaveManager : MonoBehaviour
     {
         if (Instance == this)
             Instance = null;
+        StopAllCoroutines();
     }
 
     private void OnEnable()
@@ -202,4 +203,6 @@ public class WaveManager : MonoBehaviour
         string waveText = $"{CurrentWave}/{TotalWaves}";
         EventManager.Invoke<string>(GlobalEvents.OleadasUpdated, waveText);
     }
+
+
 }

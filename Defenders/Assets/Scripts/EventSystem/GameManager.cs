@@ -34,17 +34,10 @@ public class GameManager : MonoBehaviour
     {
         gameStartTime = Time.time;
         Time.timeScale = 1f;
-        void DebugCounts()
-        {
-            Debug.Log($"WaveManager count: {FindObjectsOfType<WaveManager>().Length}");
-            Debug.Log($"GameManager count: {FindObjectsOfType<GameManager>().Length}");
-            Debug.Log($"WaveManager Instance == null? {WaveManager.Instance == null}");
-            Debug.Log($"GameManager Instance == null? {GameManager.Instance == null}");
-        }
+
         if (victoryPanel != null) victoryPanel.SetActive(false);
         if (defeatPanel != null) defeatPanel.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(false);
-        DebugCounts();
     }
 
     private void OnEnable()
