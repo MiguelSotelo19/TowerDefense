@@ -8,39 +8,37 @@ public class ScanPowerUp : MonoBehaviour
     [SerializeField] private float scanRadius = 5f;
     [SerializeField] private float scanDuration = 4f;
     [SerializeField] private float damagePerSecond = 10f;
-    [SerializeField] private float damageTickRate = 0.5f; // Cada cuánto tiempo aplica daño
+    [SerializeField] private float damageTickRate = 0.5f;
     
     [Header("Placement")]
-    [SerializeField] private LayerMask groundLayer; // Para detectar dónde colocar el área
-    [SerializeField] private bool useMousePlacement = true; // Si es false, se coloca en el centro del mapa
-    [SerializeField] private Vector3 fixedPosition = Vector3.zero; // Posición fija si no usa mouse
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private bool useMousePlacement = true;
+    [SerializeField] private Vector3 fixedPosition = Vector3.zero;
     
     [Header("Visual Effects")]
-    [SerializeField] private GameObject scanAreaPrefab; // Prefab del área visual
-    [SerializeField] private Color scanColor = new Color(0f, 1f, 0f, 0.3f); // Verde transparente
-    [SerializeField] private Material scanMaterial; // Material del área
+    [SerializeField] private GameObject scanAreaPrefab;
+    [SerializeField] private Color scanColor = new Color(0f, 1f, 0f, 0.3f);
+    [SerializeField] private Material scanMaterial;
     
     [Header("Audio")]
     [SerializeField] private AudioClip scanSound;
     [SerializeField] private AudioClip damageTickSound;
     
     [Header("Cooldown Settings")]
-    [SerializeField] private float cooldownTime = 12f; // Tiempo de recarga en segundos
+    [SerializeField] private float cooldownTime = 12f;
 
     private float cooldownTimer = 0f;
-    
     private bool isOnCooldown = false;
     private bool isPlacingArea = false;
+    private bool isScanActive = false; // ⭐ NUEVA variable
     private GameObject currentScanAreaPreview;
     
     private void Update()
     {
-        // Si estamos en modo de colocación, mostrar preview
         if (isPlacingArea && useMousePlacement)
         {
             UpdatePreviewPosition();
             
-            // Clic izquierdo para confirmar posición
             if (Input.GetMouseButtonDown(0))
             {
                 Vector3 position = GetMouseWorldPosition();
@@ -53,7 +51,6 @@ public class ScanPowerUp : MonoBehaviour
                 }
             }
             
-            // Clic derecho para cancelar
             if (Input.GetMouseButtonDown(1))
             {
                 CancelPlacement();
@@ -65,19 +62,17 @@ public class ScanPowerUp : MonoBehaviour
     {
         if (isOnCooldown)
         {
-            Debug.Log("El escaneo está en cooldown!");
+            Debug.Log($"El escaneo está en cooldown! Espera {cooldownTimer:F1} segundos");
             return;
         }
         
         if (useMousePlacement)
         {
-            // Activar modo de colocación
             isPlacingArea = true;
             CreatePreview();
         }
         else
         {
-            // Activar directamente en posición fija
             ActivateScanAtPosition(fixedPosition);
         }
     }
@@ -87,10 +82,8 @@ public class ScanPowerUp : MonoBehaviour
         if (scanAreaPrefab != null)
         {
             currentScanAreaPreview = Instantiate(scanAreaPrefab);
-            // Hacer el preview delgado
             currentScanAreaPreview.transform.localScale = new Vector3(scanRadius * 2, 0.05f, scanRadius * 2);
             
-            // Hacer el preview semi-transparente
             Renderer renderer = currentScanAreaPreview.GetComponent<Renderer>();
             if (renderer != null)
             {
@@ -101,9 +94,7 @@ public class ScanPowerUp : MonoBehaviour
         }
         else
         {
-            // Crear un preview simple si no hay prefab
             currentScanAreaPreview = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            // Hacer el cilindro muy delgado (Y = 0.05)
             currentScanAreaPreview.transform.localScale = new Vector3(scanRadius * 2, 0.05f, scanRadius * 2);
             
             Renderer renderer = currentScanAreaPreview.GetComponent<Renderer>();
@@ -114,7 +105,6 @@ public class ScanPowerUp : MonoBehaviour
                 renderer.material.color = previewColor;
             }
             
-            // Remover el collider del preview
             Collider col = currentScanAreaPreview.GetComponent<Collider>();
             if (col != null) Destroy(col);
         }
@@ -127,9 +117,9 @@ public class ScanPowerUp : MonoBehaviour
         Vector3 position = GetMouseWorldPosition();
         if (position != Vector3.zero)
         {
-            position.y += 0.1f; // Elevar ligeramente
+            position.y += 0.1f;
             currentScanAreaPreview.transform.position = position;
-            currentScanAreaPreview.transform.rotation = Quaternion.identity; // Mantener sin rotación
+            currentScanAreaPreview.transform.rotation = Quaternion.identity;
         }
     }
     
@@ -162,112 +152,121 @@ public class ScanPowerUp : MonoBehaviour
     }
     
     private IEnumerator ScanAreaRoutine(Vector3 position)
-{
-    isOnCooldown = true;
-    cooldownTimer = cooldownTime; // Iniciar el timer
-    
-    // Reproducir sonido de activación
-    if (scanSound != null)
     {
-        AudioSource.PlayClipAtPoint(scanSound, position);
-    }
-    
-    // Crear el área visual
-    GameObject scanArea = CreateScanArea(position);
-    
-    float elapsedTime = 0f;
-    float nextDamageTick = 0f;
-    
-    // Lista para trackear enemigos que ya están en el área
-    List<Enemy> enemiesInArea = new List<Enemy>();
-    
-    while (elapsedTime < scanDuration)
-    {
-        elapsedTime += Time.deltaTime;
-        nextDamageTick += Time.deltaTime;
-        cooldownTimer -= Time.deltaTime; // Reducir el timer mientras dura el scan
+        isOnCooldown = true;
+        isScanActive = true; // ⭐ Marcar scan como activo
         
-        // Aplicar daño cada tick
-        if (nextDamageTick >= damageTickRate)
+        // Reproducir sonido de activación
+        if (scanSound != null)
         {
-            nextDamageTick = 0f;
-            ApplyDamageInArea(position, damagePerSecond * damageTickRate);
-            
-            // Sonido de tick de daño
-            if (damageTickSound != null)
-            {
-                AudioSource.PlayClipAtPoint(damageTickSound, position, 0.3f);
-            }
+            AudioSource.PlayClipAtPoint(scanSound, position);
         }
         
-        // Efecto visual pulsante opcional (solo en X y Z, no en Y)
+        // Crear el área visual
+        GameObject scanArea = CreateScanArea(position);
+        
+        float elapsedTime = 0f;
+        float nextDamageTick = 0f;
+        
+        List<Enemy> enemiesInArea = new List<Enemy>();
+        
+        // DURACIÓN DEL SCAN (sin contar cooldown todavía)
+        while (elapsedTime < scanDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            nextDamageTick += Time.deltaTime;
+            
+            // Aplicar daño cada tick
+            if (nextDamageTick >= damageTickRate)
+            {
+                nextDamageTick = 0f;
+                ApplyDamageInArea(position, damagePerSecond * damageTickRate);
+                
+                if (damageTickSound != null)
+                {
+                    AudioSource.PlayClipAtPoint(damageTickSound, position, 0.3f);
+                }
+            }
+            
+            // Efecto visual pulsante
+            if (scanArea != null)
+            {
+                float pulse = 1f + Mathf.Sin(elapsedTime * 8f) * 0.05f;
+                scanArea.transform.localScale = new Vector3(scanRadius * 2 * pulse, 0.05f, scanRadius * 2 * pulse);
+            }
+            
+            yield return null;
+        }
+        
+        // Destruir el área visual
         if (scanArea != null)
         {
-            float pulse = 1f + Mathf.Sin(elapsedTime * 8f) * 0.05f;
-            scanArea.transform.localScale = new Vector3(scanRadius * 2 * pulse, 0.05f, scanRadius * 2 * pulse);
+            Destroy(scanArea);
         }
         
-        yield return null;
+        isScanActive = false; // ⭐ Marcar scan como inactivo
+        Debug.Log("Escaneo completado. AHORA iniciando cooldown...");
+        
+        // AHORA SÍ iniciar el cooldown DESPUÉS de que el scan desapareció
+        cooldownTimer = cooldownTime;
+        yield return StartCoroutine(CooldownRoutine());
     }
-    
-    // Destruir el área visual
-    if (scanArea != null)
+
+    private IEnumerator CooldownRoutine()
     {
-        Destroy(scanArea);
+        while (cooldownTimer > 0)
+        {
+            cooldownTimer -= Time.deltaTime;
+            yield return null;
+        }
+        
+        cooldownTimer = 0f;
+        isOnCooldown = false;
+        Debug.Log("Escaneo listo para usar de nuevo!");
     }
-    
-    Debug.Log("Escaneo completado. Iniciando cooldown...");
-    
-    // Continuar el cooldown si aún queda tiempo
-    yield return StartCoroutine(CooldownRoutine());
-}
 
-private IEnumerator CooldownRoutine()
-{
-    while (cooldownTimer > 0)
+    public float GetCooldownTimer()
     {
-        cooldownTimer -= Time.deltaTime;
-        yield return null;
+        if (isScanActive)
+        {
+            // Mientras el scan está activo, mostrar el cooldown completo
+            return cooldownTime;
+        }
+        return cooldownTimer;
+    }
+
+    public float GetCooldownProgress()
+    {
+        if (isScanActive)
+        {
+            return 0f; // Mientras está activo, progress en 0
+        }
+        return 1f - (cooldownTimer / cooldownTime);
     }
     
-    cooldownTimer = 0f;
-    isOnCooldown = false;
-    Debug.Log("Escaneo listo para usar de nuevo!");
-}
-
-public float GetCooldownTimer()
-{
-    return cooldownTimer;
-}
-
-public float GetCooldownProgress()
-{
-    return 1f - (cooldownTimer / cooldownTime);
-}
+    // ⭐ NUEVO método público
+    public bool IsScanActive()
+    {
+        return isScanActive;
+    }
     
     private GameObject CreateScanArea(Vector3 position)
     {
         GameObject area;
-        
-        // Ajustar posición para que esté pegada al suelo
-        position.y += 0.1f; // Elevar ligeramente para evitar z-fighting con el suelo
+        position.y += 0.1f;
         
         if (scanAreaPrefab != null)
         {
             area = Instantiate(scanAreaPrefab, position, Quaternion.Euler(0, 0, 0));
-            // Escala: radio en X y Z, pero Y muy pequeño para que sea delgado
             area.transform.localScale = new Vector3(scanRadius * 2, 0.05f, scanRadius * 2);
         }
         else
         {
-            // Crear un cilindro simple como área visual
             area = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             area.transform.position = position;
-            area.transform.rotation = Quaternion.identity; // Sin rotación
-            // Hacer el cilindro muy delgado (Y = 0.05)
+            area.transform.rotation = Quaternion.identity;
             area.transform.localScale = new Vector3(scanRadius * 2, 0.05f, scanRadius * 2);
             
-            // Aplicar material y color
             Renderer renderer = area.GetComponent<Renderer>();
             if (renderer != null)
             {
@@ -277,9 +276,8 @@ public float GetCooldownProgress()
                 }
                 else
                 {
-                    // Crear material transparente si no existe
                     renderer.material = new Material(Shader.Find("Standard"));
-                    renderer.material.SetFloat("_Mode", 3); // Transparent mode
+                    renderer.material.SetFloat("_Mode", 3);
                     renderer.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
                     renderer.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                     renderer.material.SetInt("_ZWrite", 0);
@@ -291,7 +289,6 @@ public float GetCooldownProgress()
                 renderer.material.color = scanColor;
             }
             
-            // Remover el collider
             Collider col = area.GetComponent<Collider>();
             if (col != null) Destroy(col);
         }
@@ -301,7 +298,6 @@ public float GetCooldownProgress()
     
     private void ApplyDamageInArea(Vector3 center, float damage)
     {
-        // Encontrar todos los enemigos en el radio
         Collider[] colliders = Physics.OverlapSphere(center, scanRadius);
         int enemiesHit = 0;
         
@@ -310,7 +306,6 @@ public float GetCooldownProgress()
             Enemy enemy = col.GetComponent<Enemy>();
             if (enemy != null && enemy.gameObject.activeInHierarchy)
             {
-                // Aplicar daño al enemigo
                 Health health = enemy.GetComponent<Health>();
                 if (health != null)
                 {
@@ -336,7 +331,6 @@ public float GetCooldownProgress()
         return isPlacingArea;
     }
     
-    // Método para dibujar el radio en el editor
     private void OnDrawGizmosSelected()
     {
         if (!useMousePlacement)

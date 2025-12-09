@@ -31,12 +31,13 @@ public class FirewallPowerUp : MonoBehaviour
     [SerializeField] private AudioClip impactSound;
     
     [Header("Cooldown Settings")]
-    [SerializeField] private float cooldownTime = 15f; // Tiempo de recarga en segundos
+    [SerializeField] private float cooldownTime = 15f;
 
     private float cooldownTimer = 0f;
-    
+
     private bool isOnCooldown = false;
     private bool isPlacingWall = false;
+    private bool isFirewallActive = false; // ⭐ NUEVA VARIABLE
     private GameObject currentFirewallPreview;
     private float currentRotationY = 0f;
     private List<GameObject> activeFirewalls = new List<GameObject>();
@@ -173,81 +174,87 @@ public class FirewallPowerUp : MonoBehaviour
     }
     
     private IEnumerator FirewallRoutine(Vector3 position, float rotationY)
-{
-    isOnCooldown = true;
-    cooldownTimer = cooldownTime; // Iniciar el timer
-    
-    // Sonido de despliegue
-    if (deploySound != null)
     {
-        AudioSource.PlayClipAtPoint(deploySound, position);
-    }
+        isOnCooldown = true;
+        isFirewallActive = true; // ⭐ Marcar firewall como activo
     
-    // Crear el firewall
-    GameObject firewall = CreateFirewall(position, rotationY);
-    activeFirewalls.Add(firewall);
-    
-    // Componente para manejar colisiones y daño
-    FirewallCollisionHandler handler = firewall.AddComponent<FirewallCollisionHandler>();
-    handler.Initialize(firewallHealth, isDestructible, damageEnemiesOnContact, contactDamage, damageInterval, impactSound);
-    
-    // Animación de aparición
-    yield return StartCoroutine(AnimateFirewallAppear(firewall));
-    
-    // Esperar duración
-    float elapsedTime = 0f;
-    while (elapsedTime < firewallDuration && firewall != null)
-    {
-        elapsedTime += Time.deltaTime;
-        cooldownTimer -= Time.deltaTime; // Reducir el timer mientras dura el firewall
-        
-        // Parpadeo cuando está por terminar
-        if (firewallDuration - elapsedTime < 2f)
+        // Sonido de despliegue
+        if (deploySound != null)
         {
-            Renderer renderer = firewall.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                float alpha = Mathf.PingPong(Time.time * 3f, 0.5f) + 0.3f;
-                Color color = firewallColor;
-                color.a = alpha;
-                renderer.material.color = color;
-            }
+            AudioSource.PlayClipAtPoint(deploySound, position);
         }
+    
+        // Crear el firewall
+        GameObject firewall = CreateFirewall(position, rotationY);
+        activeFirewalls.Add(firewall);
+    
+        // Componente para manejar colisiones y daño
+        FirewallCollisionHandler handler = firewall.AddComponent<FirewallCollisionHandler>();
+        handler.Initialize(firewallHealth, isDestructible, damageEnemiesOnContact, contactDamage, damageInterval, impactSound);
+    
+        // Animación de aparición
+        yield return StartCoroutine(AnimateFirewallAppear(firewall));
+    
+        // Esperar duración
+        float elapsedTime = 0f;
+        while (elapsedTime < firewallDuration && firewall != null)
+        {
+            elapsedTime += Time.deltaTime;
         
-        yield return null;
+            // Parpadeo cuando está por terminar
+            if (firewallDuration - elapsedTime < 2f)
+            {
+                Renderer renderer = firewall.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    float alpha = Mathf.PingPong(Time.time * 3f, 0.5f) + 0.3f;
+                    Color color = firewallColor;
+                    color.a = alpha;
+                    renderer.material.color = color;
+                }
+            }
+        
+            yield return null;
+        }
+    
+        // Animación de desaparición y destruir
+        if (firewall != null)
+        {
+            yield return StartCoroutine(AnimateFirewallDisappear(firewall));
+            activeFirewalls.Remove(firewall);
+            Destroy(firewall);
+        }
+    
+        isFirewallActive = false; // ⭐ Marcar firewall como inactivo
+        Debug.Log("Firewall desactivado. AHORA iniciando cooldown...");
+    
+        // Iniciar el cooldown
+        cooldownTimer = cooldownTime;
+        yield return StartCoroutine(CooldownRoutine());
     }
-    
-    // Animación de desaparición y destruir
-    if (firewall != null)
-    {
-        yield return StartCoroutine(AnimateFirewallDisappear(firewall));
-        activeFirewalls.Remove(firewall);
-        Destroy(firewall);
-    }
-    
-    Debug.Log("Firewall desactivado. Iniciando cooldown...");
-    
-    // Continuar el cooldown si aún queda tiempo
-    yield return StartCoroutine(CooldownRoutine());
-}
 
-private IEnumerator CooldownRoutine()
-{
-    while (cooldownTimer > 0)
+    private IEnumerator CooldownRoutine()
     {
-        cooldownTimer -= Time.deltaTime;
-        yield return null;
-    }
+        while (cooldownTimer > 0)
+        {
+            cooldownTimer -= Time.deltaTime;
+            yield return null;
+        }
     
-    cooldownTimer = 0f;
-    isOnCooldown = false;
-    Debug.Log("Firewall listo para usar de nuevo!");
-}
+        cooldownTimer = 0f;
+        isOnCooldown = false;
+        Debug.Log("Firewall listo para usar de nuevo!");
+    }
 
-public float GetCooldownTimer()
-{
-    return cooldownTimer;
-}
+    public float GetCooldownTimer()
+    {
+        if (isFirewallActive)
+        {
+            // Mientras el firewall está activo, mostrar el cooldown completo
+            return cooldownTime;
+        }
+        return cooldownTimer;
+    }
 
 public float GetCooldownProgress()
 {
@@ -505,4 +512,6 @@ public class FirewallCollisionHandler : MonoBehaviour
             agent.enabled = true;
         }
     }
+    
+    
 }
