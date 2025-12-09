@@ -25,6 +25,8 @@ public class Enemy : MonoBehaviour
     private bool isFrozen = false;
     private Renderer enemyRenderer;
     private Color originalColor;
+    private bool wasKinematic = false; // ⭐ NUEVA variable para guardar el estado
+
 
 
     private void Awake()
@@ -169,35 +171,53 @@ public class Enemy : MonoBehaviour
     public void SetFrozen(bool frozen, Color freezeColor)
     {
         isFrozen = frozen;
-        
+    
+        Rigidbody rb = GetComponent<Rigidbody>();
+    
         if (followPathAgent != null)
         {
-            // Desactivar/activar el componente para detener completamente el movimiento
-            followPathAgent.enabled = !frozen;
-            
-            // Si se descongela, asegurarse de que el Rigidbody esté activo
-            Rigidbody rb = GetComponent<Rigidbody>();
-            if (rb != null && frozen)
+            if (frozen)
             {
-                rb.linearVelocity = Vector3.zero;
+                // Desactivar movimiento
+                followPathAgent.enabled = false;
+            
+                // IMPORTANTE: Hacer el Rigidbody kinematic para que no se mueva por física
+                if (rb != null)
+                {
+                    wasKinematic = rb.isKinematic; // Guardar estado original
+                    rb.isKinematic = true; // ⭐ Hacer kinematic
+                    rb.linearVelocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero; // ⭐ También detener rotación
+                }
+            }
+            else
+            {
+                // Reactivar movimiento
+                followPathAgent.enabled = true;
+            
+                // Restaurar el Rigidbody a su estado original
+                if (rb != null)
+                {
+                    rb.isKinematic = wasKinematic; // ⭐ Restaurar estado original
+                    rb.linearVelocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                }
             }
         }
-        
+    
         // Pausar o reanudar el animator
         if (animator != null)
         {
             animator.speed = frozen ? 0f : 1f;
         }
-        
+    
         // Cambiar color visual
         if (enemyRenderer != null)
         {
             enemyRenderer.material.color = frozen ? freezeColor : originalColor;
         }
-        
-        Debug.Log($"Enemigo {gameObject.name} congelado: {frozen}");
     }
-    
+
     public bool IsFrozen()
     {
         return isFrozen;
